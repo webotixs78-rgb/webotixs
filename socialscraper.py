@@ -5,10 +5,11 @@ import requests
 from urllib.parse import urljoin
 from bs4 import BeautifulSoup
 import pandas as pd
-import os
 import streamlit as st
 
-# Only look for Facebook and Instagram
+# -------------------------
+# Config
+# -------------------------
 SOCIAL_DOMAINS = ["facebook.com", "instagram.com"]
 
 HEADERS = {
@@ -101,7 +102,7 @@ def crawl_site(base_url):
     return result
 
 # -------------------------
-# Process websites (SYNC)
+# Process websites
 # -------------------------
 def process_websites(websites):
     results = []
@@ -116,10 +117,44 @@ def process_websites(websites):
 # -------------------------
 # Streamlit UI
 # -------------------------
-st.set_page_config(page_title="Social Media Link Scraper", layout="centered")
+st.set_page_config(
+    page_title="Social Media Link Scraper",
+    layout="centered"
+)
+
 st.title("🔍 Website Social Media Link Scraper")
 
 st.markdown("""
 ### 📋 Instructions
-- Upload a CSV file with a **`Website`** column
-- Example:
+- Upload a CSV file with a **`Website`** column  
+- Example: `https://example.com`  
+- The app will find **Facebook & Instagram** links  
+- Crawls up to **3 pages per website**
+""")
+
+uploaded_file = st.file_uploader("📤 Upload CSV File", type=["csv"])
+
+if uploaded_file:
+    df = pd.read_csv(uploaded_file)
+
+    if "Website" not in df.columns:
+        st.error("❌ CSV must contain a 'Website' column")
+    else:
+        websites = df["Website"].dropna().tolist()
+
+        if st.button("🚀 Start Scraping"):
+            with st.spinner("Scraping websites..."):
+                results = process_websites(websites)
+
+            result_df = pd.DataFrame(results)
+            st.success("✅ Scraping completed!")
+
+            st.dataframe(result_df, use_container_width=True)
+
+            csv = result_df.to_csv(index=False).encode("utf-8")
+            st.download_button(
+                label="⬇️ Download Results CSV",
+                data=csv,
+                file_name="social_links_results.csv",
+                mime="text/csv"
+            )
