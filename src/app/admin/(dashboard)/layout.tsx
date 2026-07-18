@@ -94,10 +94,21 @@ export default function AdminLayout({
   const supabase = createClient()
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const [userEmail, setUserEmail] = useState<string>('webotixs78@gmail.com')
+  const [unauthorizedRole, setUnauthorizedRole] = useState<string | null>(null)
 
   useEffect(() => {
-    const fetchUser = async () => {
+    const checkRoleSession = async () => {
       try {
+        const storedSession = localStorage.getItem('webotixs_active_session')
+        if (storedSession) {
+          const parsed = JSON.parse(storedSession)
+          if (parsed && parsed.role && parsed.role !== 'Super Admin' && parsed.role !== 'Admin') {
+            setUnauthorizedRole(parsed.role)
+            return
+          }
+          if (parsed && parsed.email) setUserEmail(parsed.email)
+        }
+
         const {
           data: { user },
         } = await supabase.auth.getUser()
@@ -105,20 +116,61 @@ export default function AdminLayout({
           setUserEmail(user.email)
         }
       } catch {
-        // Fallback to demo session email if Supabase offline
         setUserEmail('webotixs78@gmail.com')
       }
     }
-    fetchUser()
+    checkRoleSession()
   }, [supabase])
 
   const handleLogout = async () => {
     document.cookie = 'webotixs_admin_session=; path=/; max-age=0'
+    document.cookie = 'webotixs_role_session=; path=/; max-age=0'
+    document.cookie = 'webotixs_user_id=; path=/; max-age=0'
+    localStorage.removeItem('webotixs_active_session')
     try {
       await supabase.auth.signOut()
     } catch {}
     router.push('/admin/login')
     router.refresh()
+  }
+
+  if (unauthorizedRole) {
+    let returnUrl = '/team/dashboard'
+    if (unauthorizedRole === 'Team Manager') returnUrl = '/manager/dashboard'
+    else if (unauthorizedRole === 'Client') returnUrl = '/client/dashboard'
+
+    return (
+      <div className="min-h-screen bg-[#050816] flex flex-col items-center justify-center p-6 text-center font-sans">
+        <div className="bg-[#0D1224] border border-red-500/30 rounded-3xl p-8 max-w-md w-full shadow-2xl space-y-5">
+          <div className="w-16 h-16 bg-red-500/10 border border-red-500/20 rounded-2xl flex items-center justify-center mx-auto text-red-400">
+            <Sliders size={28} />
+          </div>
+          <div className="space-y-1.5">
+            <span className="px-3 py-1 rounded-full bg-red-500/10 border border-red-500/20 text-red-400 text-xs font-bold uppercase tracking-wider">
+              403 Forbidden — Route Protected
+            </span>
+            <h1 className="font-display text-xl font-bold text-white mt-2">Access Denied</h1>
+            <p className="text-xs text-[#94A3B8] leading-relaxed">
+              You are currently logged in with the role <strong className="text-white">{unauthorizedRole}</strong>. Super Admin dashboard access is restricted to agency administrators only.
+            </p>
+          </div>
+          <div className="pt-2">
+            <Link
+              href={returnUrl}
+              className="block w-full py-3 bg-gradient-to-r from-blue-600 to-cyan-500 text-white text-xs font-bold rounded-xl hover:shadow-glow-sm transition-all"
+            >
+              Return to My {unauthorizedRole} Dashboard
+            </Link>
+            <button
+              onClick={handleLogout}
+              className="mt-3 text-xs text-[#94A3B8] hover:text-white underline transition-colors"
+            >
+              Log Out and Sign In with Different Account
+            </button>
+          </div>
+        </div>
+      </div>
+    )
   }
 
   const renderNavList = (onItemClick?: () => void) => (

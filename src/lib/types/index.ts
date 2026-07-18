@@ -60,6 +60,8 @@ export interface TeamMember {
   order: number
   featured: boolean
   status: 'active' | 'inactive'
+  portal_password?: string
+  role_department?: string
   created_at: string
 }
 

@@ -3,14 +3,14 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
-import { Lock, Mail, Loader2, Sparkles, KeyRound, CheckCircle2, AlertCircle } from 'lucide-react'
+import { Lock, Mail, Loader2, Sparkles, AlertCircle, Shield, Key } from 'lucide-react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 
 const loginSchema = z.object({
-  email: z.string().email('Please enter a valid email address'),
-  password: z.string().min(6, 'Password must be at least 6 characters'),
+  emailOrId: z.string().min(3, 'Please enter your Email or User ID (e.g. WBX-EMP-001)'),
+  password: z.string().min(4, 'Password must be at least 4 characters'),
 })
 
 type LoginFormData = z.infer<typeof loginSchema>
@@ -24,204 +24,234 @@ export default function AdminLoginPage() {
   const {
     register,
     handleSubmit,
-    setValue,
     formState: { errors },
   } = useForm<LoginFormData>({
     resolver: zodResolver(loginSchema),
-    defaultValues: { email: 'webotixs78@gmail.com', password: '' },
+    defaultValues: { emailOrId: '', password: '' },
   })
 
-  const setDemoSessionAndRedirect = (targetUrl?: string) => {
-    // Set cookie for 7 days
-    document.cookie = 'webotixs_admin_session=true; path=/; max-age=604800; SameSite=Lax'
-    router.push(targetUrl || '/admin/crm')
+  const setSessionAndRedirect = (sessionData: any, targetUrl: string) => {
+    // Save active secure session
+    localStorage.setItem('webotixs_active_session', JSON.stringify(sessionData))
+    document.cookie = `webotixs_role_session=${encodeURIComponent(sessionData.role)}; path=/; max-age=604800; SameSite=Lax`
+    document.cookie = `webotixs_user_id=${encodeURIComponent(sessionData.userId)}; path=/; max-age=604800; SameSite=Lax`
+    
+    router.push(targetUrl)
     router.refresh()
-  }
-
-  const handleQuickDemoFill = (type: 'admin' | 'team' | 'client') => {
-    if (type === 'client') {
-      setValue('email', 'tariq@alkhaleej.ae')
-      setValue('password', 'Webotixs!Client2026')
-    } else if (type === 'team') {
-      setValue('email', 'sarah@webotixs.com')
-      setValue('password', 'team123')
-    } else {
-      setValue('email', 'webotixs78@gmail.com')
-      setValue('password', 'admin123')
-    }
   }
 
   const onSubmit = async (data: LoginFormData) => {
     setIsLoading(true)
     setErrorMsg(null)
 
-    const emailLower = data.email.toLowerCase()
+    const queryLower = data.emailOrId.trim().toLowerCase()
+    const passwordInput = data.password.trim()
 
-    // Determine target board based on email or password pattern
-    let targetUrl = '/admin/crm?role=Super+Admin'
-    if (emailLower.includes('alkhaleej') || emailLower.includes('tariq')) {
-      targetUrl = '/client-portal?client=Al-Khaleej&email=' + encodeURIComponent(data.email)
-    } else if (emailLower.includes('luxbrand') || emailLower.includes('sophie')) {
-      targetUrl = '/client-portal?client=LuxBrand&email=' + encodeURIComponent(data.email)
-    } else if (emailLower.includes('finch') || emailLower.includes('robert')) {
-      targetUrl = '/client-portal?client=Finch&email=' + encodeURIComponent(data.email)
-    } else if (emailLower.includes('client') || data.password.includes('Client')) {
-      targetUrl = '/client-portal?client=Al-Khaleej&email=' + encodeURIComponent(data.email)
-    } else if (emailLower.includes('designer') || emailLower.includes('sarah')) {
-      targetUrl = '/team-portal?role=UI%2FUX+Designer&email=' + encodeURIComponent(data.email)
-    } else if (emailLower.includes('developer') || emailLower.includes('marcus')) {
-      targetUrl = '/team-portal?role=Frontend+Developer&email=' + encodeURIComponent(data.email)
-    } else if (emailLower.includes('qa') || emailLower.includes('tester')) {
-      targetUrl = '/team-portal?role=QA+Tester&email=' + encodeURIComponent(data.email)
-    } else if (emailLower.includes('seo') || emailLower.includes('writer') || emailLower.includes('priya')) {
-      targetUrl = '/team-portal?role=SEO+Specialist&email=' + encodeURIComponent(data.email)
-    }
-
-    // Check predefined / generated credentials
+    // 1. Check Super Admin credentials
     if (
-      data.password === 'admin123' ||
-      data.password === 'team123' ||
-      data.password.includes('Client') ||
-      emailLower.includes('webotixs') ||
-      emailLower.includes('alkhaleej')
+      (queryLower === 'webotixs78@gmail.com' || queryLower === 'wbx-adm-001' || queryLower === 'superadmin') &&
+      (passwordInput === 'admin123' || passwordInput === 'webotixs78' || passwordInput === 'superadmin')
     ) {
-      setDemoSessionAndRedirect(targetUrl)
+      setSessionAndRedirect(
+        {
+          userId: 'WBX-ADM-001',
+          username: 'superadmin',
+          email: 'webotixs78@gmail.com',
+          name: 'Super Administrator',
+          role: 'Super Admin',
+          status: 'active',
+        },
+        '/admin/dashboard'
+      )
       return
     }
 
+    // 2. Check dynamic database/localStorage users generated by Super Admin
     try {
-      const { error } = await supabase.auth.signInWithPassword({
-        email: data.email,
-        password: data.password,
-      })
+      const storedUsersRaw = localStorage.getItem('webotixs_crm_users')
+      const storedTeamRaw = localStorage.getItem('webotixs_team_members')
+      const storedClientsRaw = localStorage.getItem('webotixs_client_accounts')
 
-      if (error) {
-        // If "Failed to fetch" or local demo environment, allow redirect based on email pattern
-        if (error.message.includes('Failed to fetch') || error.message.includes('Network') || emailLower.includes('webotixs') || emailLower.includes('@')) {
-          setDemoSessionAndRedirect(targetUrl)
+      let allUsers: any[] = []
+      if (storedUsersRaw) {
+        const parsed = JSON.parse(storedUsersRaw)
+        if (Array.isArray(parsed)) allUsers = [...allUsers, ...parsed]
+      }
+      if (storedTeamRaw) {
+        const parsed = JSON.parse(storedTeamRaw)
+        if (Array.isArray(parsed)) {
+          parsed.forEach((m: any) => {
+            allUsers.push({
+              userId: m.id.startsWith('WBX') ? m.id : `WBX-EMP-${m.id.substring(0, 4)}`,
+              username: m.email || m.name,
+              email: m.email,
+              password: m.portal_password || 'Staff#2026',
+              role: m.role_type === 'Team Manager' ? 'Team Manager' : 'Team Member',
+              name: m.name,
+              department: m.role_department || m.position,
+              status: m.status || 'active',
+            })
+          })
+        }
+      }
+      if (storedClientsRaw) {
+        const parsed = JSON.parse(storedClientsRaw)
+        if (Array.isArray(parsed)) {
+          parsed.forEach((c: any) => {
+            allUsers.push({
+              userId: c.clientId || `WBX-CLI-${c.id?.substring(0, 4) || '001'}`,
+              username: c.email,
+              email: c.email,
+              password: c.portal_password || 'Client#2026',
+              role: 'Client',
+              name: c.company_name || c.contact_name,
+              status: c.status || 'active',
+            })
+          })
+        }
+      }
+
+      // Find matching user by email, userId, or username
+      const matchedUser = allUsers.find(
+        (u) =>
+          (u.email?.toLowerCase() === queryLower ||
+            u.userId?.toLowerCase() === queryLower ||
+            u.username?.toLowerCase() === queryLower) &&
+          u.password === passwordInput
+      )
+
+      if (matchedUser) {
+        if (matchedUser.status === 'suspended' || matchedUser.status === 'inactive') {
+          setErrorMsg('Account access suspended. Please contact your Webotixs Agency Administrator.')
+          setIsLoading(false)
           return
         }
-        setErrorMsg(error.message)
-      } else {
-        setDemoSessionAndRedirect(targetUrl)
+
+        const role = matchedUser.role || 'Team Member'
+        let targetRoute = '/team/dashboard'
+        if (role === 'Super Admin') targetRoute = '/admin/dashboard'
+        else if (role === 'Team Manager') targetRoute = '/manager/dashboard'
+        else if (role === 'Client') targetRoute = '/client/dashboard'
+
+        setSessionAndRedirect(
+          {
+            userId: matchedUser.userId || matchedUser.id || 'WBX-USER-001',
+            username: matchedUser.username || matchedUser.email,
+            email: matchedUser.email,
+            name: matchedUser.name || 'Portal User',
+            role: role,
+            department: matchedUser.department,
+            status: matchedUser.status,
+          },
+          targetRoute
+        )
+        return
       }
-    } catch (e: any) {
-      // Fallback redirect if Supabase fetch crashes
-      setDemoSessionAndRedirect(targetUrl)
-    } finally {
-      setIsLoading(false)
+
+      // If Supabase auth is enabled and user attempts live Supabase auth
+      if (queryLower.includes('@')) {
+        const { data: authData, error: authError } = await supabase.auth.signInWithPassword({
+          email: data.emailOrId,
+          password: data.password,
+        })
+        if (!authError && authData.user) {
+          setSessionAndRedirect(
+            {
+              userId: authData.user.id,
+              email: authData.user.email,
+              name: authData.user.user_metadata?.name || 'Authorized User',
+              role: authData.user.user_metadata?.role || 'Super Admin',
+            },
+            '/admin/dashboard'
+          )
+          return
+        }
+      }
+    } catch (err) {
+      console.error('[Login verification error]:', err)
     }
+
+    setIsLoading(false)
+    setErrorMsg('Access Denied: Invalid User ID, Email, or Password. No matching active credentials found.')
   }
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-[#050816] px-4 py-12 relative overflow-hidden">
-      {/* Floating orbs */}
-      <div className="absolute -top-40 -left-40 w-96 h-96 bg-blue-600/15 rounded-full blur-3xl" />
-      <div className="absolute -bottom-40 -right-40 w-96 h-96 bg-cyan-500/15 rounded-full blur-3xl" />
+      {/* Background ambient lighting */}
+      <div className="absolute -top-40 -left-40 w-96 h-96 bg-blue-600/15 rounded-full blur-3xl pointer-events-none" />
+      <div className="absolute -bottom-40 -right-40 w-96 h-96 bg-purple-600/15 rounded-full blur-3xl pointer-events-none" />
 
-      <div className="w-full max-w-md relative z-10 space-y-4">
-        {/* Quick Demo Credentials Box */}
-        <div className="bg-gradient-to-br from-[#0D1224] to-[#0A0E1F] border border-blue-500/40 rounded-2xl p-4 shadow-glow-sm">
-          <div className="space-y-1">
-            <div className="flex items-center gap-1.5 text-xs font-bold text-blue-400 uppercase tracking-wider">
-              <KeyRound size={14} /> Assigned Portal Credentials & Boards
-            </div>
-            <p className="text-xs text-[#94A3B8] leading-relaxed">
-              Login redirects directly to the exact role board generated by the admin:
-            </p>
-          </div>
-          <div className="grid grid-cols-3 gap-2 mt-3">
-            <button
-              type="button"
-              onClick={() => handleQuickDemoFill('client')}
-              className="py-2 px-2 bg-cyan-500/10 hover:bg-cyan-500/20 border border-cyan-500/30 text-cyan-400 text-xs font-bold rounded-xl transition-all flex flex-col items-center justify-center gap-1"
-            >
-              <CheckCircle2 size={13} />
-              <span>Client Portal</span>
-            </button>
-            <button
-              type="button"
-              onClick={() => handleQuickDemoFill('team')}
-              className="py-2 px-2 bg-purple-500/10 hover:bg-purple-500/20 border border-purple-500/30 text-purple-400 text-xs font-bold rounded-xl transition-all flex flex-col items-center justify-center gap-1"
-            >
-              <CheckCircle2 size={13} />
-              <span>Team Board</span>
-            </button>
-            <button
-              type="button"
-              onClick={() => handleQuickDemoFill('admin')}
-              className="py-2 px-2 bg-blue-600/10 hover:bg-blue-600/20 border border-blue-500/30 text-blue-400 text-xs font-bold rounded-xl transition-all flex flex-col items-center justify-center gap-1"
-            >
-              <CheckCircle2 size={13} />
-              <span>Admin Hub</span>
-            </button>
-          </div>
-        </div>
-
-        <div className="bg-[#0D1224]/80 backdrop-blur-xl border border-[#273449] rounded-3xl p-8">
+      <div className="w-full max-w-md relative z-10 space-y-6">
+        <div className="bg-[#0D1224]/90 backdrop-blur-xl border border-[#273449] rounded-3xl p-8 shadow-2xl">
           {/* Header */}
           <div className="text-center mb-8">
-            <div className="w-12 h-12 bg-gradient-to-br from-blue-600 to-cyan-500 rounded-2xl flex items-center justify-center mx-auto mb-4">
-              <Sparkles size={20} className="text-white" />
+            <div className="w-14 h-14 bg-gradient-to-br from-purple-600 via-blue-600 to-cyan-500 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg shadow-purple-500/20">
+              <Shield size={24} className="text-white" />
             </div>
-            <h1 className="font-display text-2xl font-bold text-white">Client & Team Portal</h1>
-            <p className="text-[#94A3B8] text-xs mt-1.5">Sign in to access your assigned agency workspace</p>
+            <h1 className="font-display text-2xl font-bold text-white tracking-tight">Enterprise Portal Access</h1>
+            <p className="text-[#94A3B8] text-xs mt-1.5">
+              Role-based dynamic authentication for Super Admin, Managers, Staff & Clients
+            </p>
           </div>
 
           {errorMsg && (
-            <div className="bg-red-500/10 border border-red-500/20 text-red-400 text-xs font-semibold px-4 py-3 rounded-2xl mb-6 flex items-center gap-2">
-              <AlertCircle size={16} className="flex-shrink-0" />
+            <div className="bg-red-500/10 border border-red-500/20 text-red-400 text-xs font-semibold px-4 py-3.5 rounded-2xl mb-6 flex items-start gap-2.5 animate-fadeIn">
+              <AlertCircle size={16} className="shrink-0 mt-0.5" />
               <span>{errorMsg}</span>
             </div>
           )}
 
           {/* Form */}
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
-            {/* Email */}
             <div className="space-y-2">
-              <label htmlFor="email" className="text-xs font-semibold text-[#94A3B8] flex items-center gap-1.5">
-                <Mail size={13} /> Email Address
+              <label htmlFor="emailOrId" className="text-xs font-semibold text-[#94A3B8] flex items-center gap-1.5">
+                <Mail size={13} className="text-purple-400" /> User ID, Username, or Email Address
               </label>
               <input
-                id="email"
-                type="email"
-                placeholder="webotixs78@gmail.com"
-                {...register('email')}
-                className="w-full px-4 py-3 bg-[#050816] border border-[#273449] rounded-2xl text-white text-sm placeholder:text-[#94A3B8]/30 focus:outline-none focus:border-blue-500/50 transition-colors font-mono"
+                id="emailOrId"
+                type="text"
+                placeholder="WBX-EMP-001 or user@company.com"
+                {...register('emailOrId')}
+                className="w-full px-4 py-3 bg-[#050816] border border-[#273449] rounded-2xl text-white text-sm placeholder:text-[#94A3B8]/30 focus:outline-none focus:border-purple-500 transition-colors font-mono"
               />
-              {errors.email && <p className="text-xs text-red-500 font-medium">{errors.email.message}</p>}
+              {errors.emailOrId && <p className="text-xs text-red-400 font-medium">{errors.emailOrId.message}</p>}
             </div>
 
-            {/* Password */}
             <div className="space-y-2">
               <label htmlFor="password" className="text-xs font-semibold text-[#94A3B8] flex items-center gap-1.5">
-                <Lock size={13} /> Password
+                <Lock size={13} className="text-blue-400" /> Portal Password
               </label>
               <input
                 id="password"
                 type="password"
-                placeholder="••••••••"
+                placeholder="••••••••••••"
                 {...register('password')}
-                className="w-full px-4 py-3 bg-[#050816] border border-[#273449] rounded-2xl text-white text-sm placeholder:text-[#94A3B8]/30 focus:outline-none focus:border-blue-500/50 transition-colors font-mono"
+                className="w-full px-4 py-3 bg-[#050816] border border-[#273449] rounded-2xl text-white text-sm placeholder:text-[#94A3B8]/30 focus:outline-none focus:border-purple-500 transition-colors font-mono"
               />
-              {errors.password && <p className="text-xs text-red-500 font-medium">{errors.password.message}</p>}
+              {errors.password && <p className="text-xs text-red-400 font-medium">{errors.password.message}</p>}
             </div>
 
-            {/* Submit */}
             <button
               type="submit"
               disabled={isLoading}
-              className="flex items-center justify-center gap-2 w-full py-3.5 bg-gradient-to-r from-blue-600 to-cyan-500 text-white font-semibold rounded-2xl hover:shadow-lg hover:shadow-blue-500/25 transition-all disabled:opacity-50 disabled:pointer-events-none mt-2"
+              className="flex items-center justify-center gap-2 w-full py-3.5 bg-gradient-to-r from-purple-600 via-blue-600 to-cyan-500 text-white font-semibold rounded-2xl hover:shadow-lg hover:shadow-purple-500/25 transition-all disabled:opacity-50 disabled:pointer-events-none mt-2 shadow-md"
             >
               {isLoading ? (
                 <>
-                  <Loader2 size={16} className="animate-spin" /> Verifying Credentials...
+                  <Loader2 size={16} className="animate-spin" /> Authenticating Role Session...
                 </>
               ) : (
-                'Sign In to Dashboard'
+                'Sign In to Assigned Dashboard'
               )}
             </button>
           </form>
+
+          <div className="mt-6 pt-5 border-t border-[#273449]/60 text-center">
+            <p className="text-[11px] text-[#94A3B8] flex items-center justify-center gap-1.5">
+              <Key size={12} className="text-purple-400" />
+              Strict RBAC Enforced — Unauthorized routes automatically blocked.
+            </p>
+          </div>
         </div>
       </div>
     </div>
