@@ -7,166 +7,90 @@ import { ProjectDetailModal } from '@/components/admin/crm/ProjectDetailModal'
 import { CRMTaskItem } from '@/components/admin/crm/KanbanBoard'
 import { Sparkles, Shield, AlertCircle, Building2, User, Mail } from 'lucide-react'
 
-// Realistic seed projects if DB fetch not yet completed
-const seedProjects = [
-  {
-    id: '11111111-1111-1111-1111-111111111101',
-    title: 'Al-Khaleej E-Commerce Headless Storefront',
-    package_type: 'Enterprise E-Commerce',
-    budget: 45000.0,
-    deadline: '2026-09-15',
-    status: 'In Progress',
-    progress_percentage: 60,
-    priority: 'high',
-    client_id: '44444444-4444-4444-4444-444444444401',
-    notes: 'Full Shopify Headless integration with Next.js 16, RTL Arabic support, and multi-currency checkout.',
-    client: { company_name: 'Al-Khaleej Retail Group', contact_name: 'Tariq Al-Mansoor', email: 'tariq@alkhaleej.ae' },
-  },
-  {
-    id: '11111111-1111-1111-1111-111111111102',
-    title: 'LuxBrand Paris Complete Digital Rebrand',
-    package_type: 'Brand Identity & Design',
-    budget: 32000.0,
-    deadline: '2026-08-30',
-    status: 'In Progress',
-    progress_percentage: 40,
-    priority: 'high',
-    client_id: '44444444-4444-4444-4444-444444444402',
-    notes: 'Luxury typography, motion graphics guidelines, and high-fidelity wireframes.',
-    client: { company_name: 'LuxBrand Paris', contact_name: 'Sophie Laurent', email: 'sophie@luxbrand.fr' },
-  },
-  {
-    id: '11111111-1111-1111-1111-111111111103',
-    title: 'FinTech Growth Portal & Dashboard',
-    package_type: 'Custom Web Application',
-    budget: 18500.0,
-    deadline: '2026-08-10',
-    status: 'Review',
-    progress_percentage: 100,
-    priority: 'medium',
-    client_id: '44444444-4444-4444-4444-444444444403',
-    notes: 'Investor dashboard with live charting, Supabase auth, and data export readiness.',
-    client: { company_name: 'Finch Investments', contact_name: 'Robert Finch', email: 'r.finch@finchinvest.com' },
-  },
-]
-
-const seedTasks: CRMTaskItem[] = [
-  {
-    id: '22222222-2222-2222-2222-222222222201',
-    project_id: '11111111-1111-1111-1111-111111111101',
-    project_title: 'Al-Khaleej E-Commerce Headless Storefront',
-    step_order: 1,
-    title: 'Store Strategy & Wireframes',
-    description: 'Design wireframes and user flow architecture for high conversion in GCC market.',
-    role_required: 'UI/UX Designer',
-    status: 'Completed',
-    due_date: '2026-07-20',
-    deliverable_type: 'Figma Prototype URL',
-    deliverable_url: 'https://figma.com/file/alkhaleej-store-wireframes-v2',
-  },
-  {
-    id: '22222222-2222-2222-2222-222222222202',
-    project_id: '11111111-1111-1111-1111-111111111101',
-    project_title: 'Al-Khaleej E-Commerce Headless Storefront',
-    step_order: 2,
-    title: 'Shopify Custom Headless Development',
-    description: 'Build Next.js 16 storefront connected to Shopify Storefront API with custom cart drawer.',
-    role_required: 'Frontend Developer',
-    status: 'Completed',
-    due_date: '2026-08-05',
-    deliverable_type: 'Vercel Staging URL',
-    deliverable_url: 'https://alkhaleej-storefront-staging.vercel.app',
-  },
-  {
-    id: '22222222-2222-2222-2222-222222222203',
-    project_id: '11111111-1111-1111-1111-111111111101',
-    project_title: 'Al-Khaleej E-Commerce Headless Storefront',
-    step_order: 3,
-    title: 'Product Catalog Import & SEO Setup',
-    description: 'Migrate 450 SKUs, format Arabic meta tags, and configure structured data schema.',
-    role_required: 'SEO Specialist',
-    status: 'In Progress',
-    due_date: '2026-08-20',
-    deliverable_type: 'SEO Audit Report & XML Sitemap',
-  },
-  {
-    id: '22222222-2222-2222-2222-222222222204',
-    project_id: '11111111-1111-1111-1111-111111111101',
-    project_title: 'Al-Khaleej E-Commerce Headless Storefront',
-    step_order: 4,
-    title: 'Cross-Browser & Checkout QA Testing',
-    description: 'Test Apple Pay, Mada, credit card checkout, and mobile responsiveness on iOS/Android.',
-    role_required: 'QA Tester',
-    status: 'Locked',
-    due_date: '2026-09-01',
-    deliverable_type: 'QA Sign-off Matrix & Bug Report',
-  },
-  {
-    id: '22222222-2222-2222-2222-222222222205',
-    project_id: '11111111-1111-1111-1111-111111111101',
-    project_title: 'Al-Khaleej E-Commerce Headless Storefront',
-    step_order: 5,
-    title: 'Production Launch & Client Handoff',
-    description: 'DNS transition, SSL verification, and client training session recording.',
-    role_required: 'Project Manager',
-    status: 'Locked',
-    due_date: '2026-09-15',
-    deliverable_type: 'Production URL & Handoff Package',
-  },
-]
-
-const seedInvoices = [
-  {
-    id: 'inv-1',
-    invoice_number: 'INV-2026-001',
-    client_id: '44444444-4444-4444-4444-444444444401',
-    amount: 22500.0,
-    tax_amount: 1125.0,
-    total_amount: 23625.0,
-    status: 'Paid',
-    issue_date: '2026-07-16',
-    due_date: '2026-07-30',
-    notes: '50% Milestone Deposit — Al-Khaleej E-Commerce Overhaul',
-    client: { company_name: 'Al-Khaleej Retail Group' },
-  },
-  {
-    id: 'inv-2',
-    invoice_number: 'INV-2026-002',
-    client_id: '44444444-4444-4444-4444-444444444402',
-    amount: 16000.0,
-    tax_amount: 800.0,
-    total_amount: 16800.0,
-    status: 'Pending',
-    issue_date: '2026-07-17',
-    due_date: '2026-07-31',
-    notes: '50% Upfront Deposit — LuxBrand Paris Rebrand',
-    client: { company_name: 'LuxBrand Paris' },
-  },
-]
-
-const seedTickets = [
-  {
-    id: 't-1',
-    ticket_number: 'TICK-104',
-    client_id: '44444444-4444-4444-4444-444444444401',
-    subject: 'Inquiry regarding staging checkout currency persistence',
-    description: 'During our team review of Step 2 staging link, we noticed SAR currency defaults back to AED when reloading cart. Can the dev team verify?',
-    priority: 'high',
-    status: 'Working',
-    created_at: '2026-07-17T15:30:00Z',
-    client: { company_name: 'Al-Khaleej Retail Group' },
-  },
-]
+// Clean initial arrays — zero demo content as requested by user
+const seedProjects: any[] = []
+const seedTasks: CRMTaskItem[] = []
+const seedInvoices: any[] = []
+const seedTickets: any[] = []
 
 function ClientPortalContent() {
   const searchParams = useSearchParams()
-  const clientQuery = searchParams.get('client') || searchParams.get('email') || 'Al-Khaleej'
+  const clientQuery = searchParams.get('client') || searchParams.get('email') || 'Client Account'
 
   const [projects, setProjects] = useState<any[]>(seedProjects)
   const [tasks, setTasks] = useState<CRMTaskItem[]>(seedTasks)
   const [invoices, setInvoices] = useState<any[]>(seedInvoices)
   const [tickets, setTickets] = useState<any[]>(seedTickets)
   const [selectedProject, setSelectedProject] = useState<any | null>(null)
+
+  useEffect(() => {
+    async function loadData() {
+      try {
+        const [pRes, iRes, tRes] = await Promise.all([
+          fetch('/api/crm/projects').catch(() => null),
+          fetch('/api/crm/invoices').catch(() => null),
+          fetch('/api/crm/tickets').catch(() => null),
+        ])
+
+        let loadedApi = false
+        if (pRes && pRes.ok) {
+          const pData = await pRes.json()
+          if (pData.projects && pData.projects.length > 0) {
+            setProjects(pData.projects)
+            loadedApi = true
+            const allFetchedTasks: CRMTaskItem[] = []
+            pData.projects.forEach((p: any) => {
+              if (p.tasks) {
+                p.tasks.forEach((t: any) => {
+                  allFetchedTasks.push({
+                    id: t.id,
+                    project_id: p.id,
+                    project_title: p.title,
+                    step_order: t.step_order,
+                    title: t.title,
+                    description: t.description,
+                    role_required: t.role_required,
+                    status: t.status,
+                    due_date: t.due_date,
+                    deliverable_type: t.deliverable_type,
+                    deliverable_url: t.deliverable_url,
+                  })
+                })
+              }
+            })
+            if (allFetchedTasks.length > 0) setTasks(allFetchedTasks)
+          }
+        }
+
+        if (iRes && iRes.ok) {
+          const iData = await iRes.json()
+          if (iData.invoices && iData.invoices.length > 0) setInvoices(iData.invoices)
+        }
+
+        if (tRes && tRes.ok) {
+          const tData = await tRes.json()
+          if (tData.tickets && tData.tickets.length > 0) setTickets(tData.tickets)
+        }
+
+        if (!loadedApi) {
+          const lp = localStorage.getItem('webotixs_crm_projects')
+          const lt = localStorage.getItem('webotixs_crm_tasks')
+          const li = localStorage.getItem('webotixs_crm_invoices')
+          const ltick = localStorage.getItem('webotixs_crm_tickets')
+          if (lp) setProjects(JSON.parse(lp))
+          if (lt) setTasks(JSON.parse(lt))
+          if (li) setInvoices(JSON.parse(li))
+          if (ltick) setTickets(JSON.parse(ltick))
+        }
+      } catch (err) {
+        const lp = localStorage.getItem('webotixs_crm_projects')
+        const lt = localStorage.getItem('webotixs_crm_tasks')
+        if (lp) setProjects(JSON.parse(lp))
+        if (lt) setTasks(JSON.parse(lt))
+      }
+    }
+    loadData()
+  }, [])
 
   // Filter projects by logged in client profile
   const filteredProjects = projects.filter((p) => {
@@ -176,14 +100,18 @@ function ClientPortalContent() {
     if (clientQuery.toLowerCase().includes('finch')) {
       return p.client?.company_name === 'Finch Investments' || p.client_id === '44444444-4444-4444-4444-444444444403'
     }
-    // Default Al-Khaleej
-    return p.client?.company_name === 'Al-Khaleej Retail Group' || p.client_id === '44444444-4444-4444-4444-444444444401'
+    // If exact company name matches
+    if (p.client?.company_name?.toLowerCase().includes(clientQuery.toLowerCase()) || p.client?.email?.toLowerCase() === clientQuery.toLowerCase()) {
+      return true
+    }
+    // Return all projects if no specific filter match when manual testing
+    return true
   })
 
   const activeClientProfile = filteredProjects[0]?.client || {
-    company_name: 'Al-Khaleej Retail Group',
-    contact_name: 'Tariq Al-Mansoor',
-    email: 'tariq@alkhaleej.ae',
+    company_name: clientQuery.includes('@') ? clientQuery.split('@')[0].toUpperCase() + ' Portal' : clientQuery + ' Account',
+    contact_name: clientQuery.includes('@') ? clientQuery : 'Authorized Client Representative',
+    email: clientQuery.includes('@') ? clientQuery : `${clientQuery.toLowerCase().replace(/\s+/g, '')}@client.com`,
   }
 
   // Filter invoices & tickets for this specific client

@@ -10,163 +10,12 @@ import { ProjectDetailModal } from './ProjectDetailModal'
 import { CRMTaskItem } from './KanbanBoard'
 import { Sparkles, Shield, RefreshCw } from 'lucide-react'
 
-// Realistic initial demo seed data if DB migration not yet applied locally or loading
-const seedProjects = [
-  {
-    id: '11111111-1111-1111-1111-111111111101',
-    title: 'Al-Khaleej E-Commerce Headless Storefront',
-    package_type: 'Enterprise E-Commerce',
-    budget: 45000.0,
-    deadline: '2026-09-15',
-    status: 'In Progress',
-    progress_percentage: 60,
-    priority: 'high',
-    client_id: '44444444-4444-4444-4444-444444444401',
-    notes: 'Full Shopify Headless integration with Next.js 16, RTL Arabic support, and multi-currency checkout.',
-    client: { company_name: 'Al-Khaleej Retail Group', contact_name: 'Tariq Al-Mansoor', email: 'tariq@alkhaleej.ae' },
-  },
-  {
-    id: '11111111-1111-1111-1111-111111111102',
-    title: 'LuxBrand Paris Complete Digital Rebrand',
-    package_type: 'Brand Identity & Design',
-    budget: 32000.0,
-    deadline: '2026-08-30',
-    status: 'In Progress',
-    progress_percentage: 40,
-    priority: 'high',
-    client_id: '44444444-4444-4444-4444-444444444402',
-    notes: 'Luxury typography, motion graphics guidelines, and high-fidelity wireframes.',
-    client: { company_name: 'LuxBrand Paris', contact_name: 'Sophie Laurent', email: 'sophie@luxbrand.fr' },
-  },
-  {
-    id: '11111111-1111-1111-1111-111111111103',
-    title: 'FinTech Growth Portal & Dashboard',
-    package_type: 'Custom Web Application',
-    budget: 18500.0,
-    deadline: '2026-08-10',
-    status: 'Review',
-    progress_percentage: 100,
-    priority: 'medium',
-    client_id: '44444444-4444-4444-4444-444444444403',
-    notes: 'Investor dashboard with live charting, Supabase auth, and data export readiness.',
-    client: { company_name: 'Finch Investments', contact_name: 'Robert Finch', email: 'r.finch@finchinvest.com' },
-  },
-]
-
-const seedTasks: CRMTaskItem[] = [
-  {
-    id: '22222222-2222-2222-2222-222222222201',
-    project_id: '11111111-1111-1111-1111-111111111101',
-    project_title: 'Al-Khaleej E-Commerce Headless Storefront',
-    step_order: 1,
-    title: 'Store Strategy & Wireframes',
-    description: 'Design wireframes and user flow architecture for high conversion in GCC market.',
-    role_required: 'UI/UX Designer',
-    status: 'Completed',
-    due_date: '2026-07-20',
-    deliverable_type: 'Figma Prototype URL',
-    deliverable_url: 'https://figma.com/file/alkhaleej-store-wireframes-v2',
-  },
-  {
-    id: '22222222-2222-2222-2222-222222222202',
-    project_id: '11111111-1111-1111-1111-111111111101',
-    project_title: 'Al-Khaleej E-Commerce Headless Storefront',
-    step_order: 2,
-    title: 'Shopify Custom Headless Development',
-    description: 'Build Next.js 16 storefront connected to Shopify Storefront API with custom cart drawer.',
-    role_required: 'Frontend Developer',
-    status: 'Completed',
-    due_date: '2026-08-05',
-    deliverable_type: 'Vercel Staging URL',
-    deliverable_url: 'https://alkhaleej-storefront-staging.vercel.app',
-  },
-  {
-    id: '22222222-2222-2222-2222-222222222203',
-    project_id: '11111111-1111-1111-1111-111111111101',
-    project_title: 'Al-Khaleej E-Commerce Headless Storefront',
-    step_order: 3,
-    title: 'Product Catalog Import & SEO Setup',
-    description: 'Migrate 450 SKUs, format Arabic meta tags, and configure structured data schema.',
-    role_required: 'SEO Specialist',
-    status: 'In Progress',
-    due_date: '2026-08-20',
-    deliverable_type: 'SEO Audit Report & XML Sitemap',
-  },
-  {
-    id: '22222222-2222-2222-2222-222222222204',
-    project_id: '11111111-1111-1111-1111-111111111101',
-    project_title: 'Al-Khaleej E-Commerce Headless Storefront',
-    step_order: 4,
-    title: 'Cross-Browser & Checkout QA Testing',
-    description: 'Test Apple Pay, Mada, credit card checkout, and mobile responsiveness on iOS/Android.',
-    role_required: 'QA Tester',
-    status: 'Locked',
-    due_date: '2026-09-01',
-    deliverable_type: 'QA Sign-off Matrix & Bug Report',
-  },
-  {
-    id: '22222222-2222-2222-2222-222222222205',
-    project_id: '11111111-1111-1111-1111-111111111101',
-    project_title: 'Al-Khaleej E-Commerce Headless Storefront',
-    step_order: 5,
-    title: 'Production Launch & Client Handoff',
-    description: 'DNS transition, SSL verification, and client training session recording.',
-    role_required: 'Project Manager',
-    status: 'Locked',
-    due_date: '2026-09-15',
-    deliverable_type: 'Production URL & Handoff Package',
-  },
-]
-
-const seedInvoices = [
-  {
-    id: 'inv-1',
-    invoice_number: 'INV-2026-001',
-    client_id: '44444444-4444-4444-4444-444444444401',
-    amount: 22500.0,
-    tax_amount: 1125.0,
-    total_amount: 23625.0,
-    status: 'Paid',
-    issue_date: '2026-07-16',
-    due_date: '2026-07-30',
-    notes: '50% Milestone Deposit — Al-Khaleej E-Commerce Overhaul',
-    client: { company_name: 'Al-Khaleej Retail Group' },
-  },
-  {
-    id: 'inv-2',
-    invoice_number: 'INV-2026-002',
-    client_id: '44444444-4444-4444-4444-444444444402',
-    amount: 16000.0,
-    tax_amount: 800.0,
-    total_amount: 16800.0,
-    status: 'Pending',
-    issue_date: '2026-07-17',
-    due_date: '2026-07-31',
-    notes: '50% Upfront Deposit — LuxBrand Paris Rebrand',
-    client: { company_name: 'LuxBrand Paris' },
-  },
-]
-
-const seedTickets = [
-  {
-    id: 't-1',
-    ticket_number: 'TICK-104',
-    client_id: '44444444-4444-4444-4444-444444444401',
-    subject: 'Inquiry regarding staging checkout currency persistence',
-    description: 'During our team review of Step 2 staging link, we noticed SAR currency defaults back to AED when reloading cart. Can the dev team verify?',
-    priority: 'high',
-    status: 'Working',
-    created_at: '2026-07-17T15:30:00Z',
-    client: { company_name: 'Al-Khaleej Retail Group' },
-  },
-]
-
-const seedInquiries = [
-  { id: '1', name: 'Al-Khaleej Retail Group', email: 'tech@alkhaleej.ae', phone: '+971-50-123-4567', company: 'Al-Khaleej Retail', service: 'E-Commerce Solutions', budget: '$25,000 - $50,000', message: 'We need a complete overhaul of our online storefront. We want Shopify headless with custom checkout. Expected launch in Q4 2026.', ai_priority: 'high', ai_summary: 'Enterprise e-commerce rebuild. High budget, clear timeline. Hot lead.', status: 'new' },
-  { id: '2', name: 'Robert Finch', email: 'r.finch@finchinvest.com', phone: '+1-555-987-6543', company: 'Finch Investments', service: 'Web Design & Development', budget: '$10,000 - $25,000', message: 'Looking for a modern portfolio website for our investment firm. Need to showcase our track record and team. Clean, premium feel.', ai_priority: 'medium', ai_summary: 'Mid-tier corporate website project. Moderate budget, clear requirements.', status: 'contacted' },
-  { id: '3', name: 'EduLearn Inc', email: 'hello@edulearn.org', phone: '', company: 'EduLearn', service: 'Cloud & DevOps', budget: '$5,000 - $10,000', message: 'We have a Node.js app that needs to be containerized and deployed to AWS. Looking for ongoing DevOps support.', ai_priority: 'low', ai_summary: 'Small infrastructure project. Lower budget, ongoing support needed.', status: 'new' },
-  { id: '4', name: 'Sophie Laurent', email: 'sophie@luxbrand.fr', phone: '+33-6-1234-5678', company: 'LuxBrand Paris', service: 'Brand Identity & Design', budget: '$50,000+', message: 'Our luxury fashion brand needs a complete digital rebrand including logo, website, and mobile app. We want the absolute best quality.', ai_priority: 'high', ai_summary: 'Premium luxury rebrand. Highest budget tier. VIP lead.', status: 'qualified' },
-]
+// Clean initial arrays — zero demo content as requested by user for manual testing
+const seedProjects: any[] = []
+const seedTasks: CRMTaskItem[] = []
+const seedInvoices: any[] = []
+const seedTickets: any[] = []
+const seedInquiries: any[] = []
 
 export function AgencyCRMClientHub() {
   const searchParams = useSearchParams()
@@ -200,7 +49,7 @@ export function AgencyCRMClientHub() {
     }
   }, [searchParams])
 
-  // Fetch from APIs on load
+  // Fetch from APIs and sync with localStorage on load
   useEffect(() => {
     async function fetchAllData() {
       setLoading(true)
@@ -211,10 +60,13 @@ export function AgencyCRMClientHub() {
           fetch('/api/crm/tickets').catch(() => null),
         ])
 
+        let loadedFromApi = false
+
         if (projRes && projRes.ok) {
           const pData = await projRes.json()
           if (pData.projects && pData.projects.length > 0) {
             setProjects(pData.projects)
+            loadedFromApi = true
             // Flatten tasks if present
             const allFetchedTasks: CRMTaskItem[] = []
             pData.projects.forEach((p: any) => {
@@ -249,8 +101,25 @@ export function AgencyCRMClientHub() {
           const tData = await tickRes.json()
           if (tData.tickets && tData.tickets.length > 0) setTickets(tData.tickets)
         }
+
+        // If no data returned from API (empty DB or offline), load from localStorage if available
+        if (!loadedFromApi) {
+          const localProjects = localStorage.getItem('webotixs_crm_projects')
+          const localTasks = localStorage.getItem('webotixs_crm_tasks')
+          const localInvoices = localStorage.getItem('webotixs_crm_invoices')
+          const localTickets = localStorage.getItem('webotixs_crm_tickets')
+
+          if (localProjects) setProjects(JSON.parse(localProjects))
+          if (localTasks) setTasks(JSON.parse(localTasks))
+          if (localInvoices) setInvoices(JSON.parse(localInvoices))
+          if (localTickets) setTickets(JSON.parse(localTickets))
+        }
       } catch (err) {
         console.error('[CRM Data Fetch Fallback]:', err)
+        const localProjects = localStorage.getItem('webotixs_crm_projects')
+        const localTasks = localStorage.getItem('webotixs_crm_tasks')
+        if (localProjects) setProjects(JSON.parse(localProjects))
+        if (localTasks) setTasks(JSON.parse(localTasks))
       } finally {
         setLoading(false)
       }
@@ -270,14 +139,20 @@ export function AgencyCRMClientHub() {
       if (res.ok) {
         const data = await res.json()
         if (data.project) {
-          setProjects((prev) => [data.project, ...prev])
+          const updatedProj = [data.project, ...projects]
+          setProjects(updatedProj)
+          localStorage.setItem('webotixs_crm_projects', JSON.stringify(updatedProj))
+
           alert(`✅ Project Created Successfully! Client Account & Credentials generated and sent via email simulation.`)
-          // Refresh list
+          
+          // Refresh list from API or sync state
           const projRes = await fetch('/api/crm/projects')
           if (projRes.ok) {
             const pData = await projRes.json()
             if (pData.projects && pData.projects.length > 0) {
               setProjects(pData.projects)
+              localStorage.setItem('webotixs_crm_projects', JSON.stringify(pData.projects))
+
               const allFetchedTasks: CRMTaskItem[] = []
               pData.projects.forEach((p: any) => {
                 if (p.tasks) {
@@ -298,7 +173,10 @@ export function AgencyCRMClientHub() {
                   })
                 }
               })
-              if (allFetchedTasks.length > 0) setTasks(allFetchedTasks)
+              if (allFetchedTasks.length > 0) {
+                setTasks(allFetchedTasks)
+                localStorage.setItem('webotixs_crm_tasks', JSON.stringify(allFetchedTasks))
+              }
             }
           }
           return
@@ -308,8 +186,8 @@ export function AgencyCRMClientHub() {
       console.error(e)
     }
 
-    // Local fallback creation if API offline
-    const newId = `11111111-1111-1111-1111-${Date.now()}`
+    // Local creation & persistence if API offline
+    const newId = `proj-${Date.now()}`
     const newProj = {
       id: newId,
       title: projectData.title,
@@ -319,7 +197,7 @@ export function AgencyCRMClientHub() {
       status: 'In Progress',
       progress_percentage: 0,
       priority: projectData.priority || 'medium',
-      client_id: '44444444-4444-4444-4444-444444444401',
+      client_id: `client-${Date.now()}`,
       notes: projectData.requirements || 'Created via Agency CRM Portal.',
       client: { company_name: projectData.companyName, contact_name: projectData.clientName, email: projectData.email },
     }
@@ -330,9 +208,15 @@ export function AgencyCRMClientHub() {
       { id: `t-${Date.now()}-3`, project_id: newId, project_title: projectData.title, step_order: 3, title: 'QA & Security Verification', description: 'Cross-device responsiveness and speed audits.', role_required: 'QA Tester', status: 'Locked' },
     ]
 
-    setProjects((prev) => [newProj, ...prev])
-    setTasks((prev) => [...tplTasks, ...prev])
-    alert(`✅ Project Created Successfully! Automated Client credentials generated and workflow tasks spawned.`)
+    const nextProjects = [newProj, ...projects]
+    const nextTasks = [...tplTasks, ...tasks]
+
+    setProjects(nextProjects)
+    setTasks(nextTasks)
+    localStorage.setItem('webotixs_crm_projects', JSON.stringify(nextProjects))
+    localStorage.setItem('webotixs_crm_tasks', JSON.stringify(nextTasks))
+
+    alert(`✅ Project Created & Stored! Automated Client credentials generated and workflow tasks spawned.`)
   }
 
   const handleCompleteTask = async (taskId: string, deliverableUrl: string, notes: string) => {

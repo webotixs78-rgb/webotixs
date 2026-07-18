@@ -8,88 +8,9 @@ import { CRMTaskItem } from '@/components/admin/crm/KanbanBoard'
 import { CRMRole } from '@/components/admin/crm/CRMRoleSwitcher'
 import { Sparkles, Shield, AlertCircle, Briefcase, User, CheckCircle2 } from 'lucide-react'
 
-// Seed data fallback
-const seedProjects = [
-  {
-    id: '11111111-1111-1111-1111-111111111101',
-    title: 'Al-Khaleej E-Commerce Headless Storefront',
-    package_type: 'Enterprise E-Commerce',
-    budget: 45000.0,
-    deadline: '2026-09-15',
-    status: 'In Progress',
-    progress_percentage: 60,
-    priority: 'high',
-    client_id: '44444444-4444-4444-4444-444444444401',
-    notes: 'Full Shopify Headless integration with Next.js 16, RTL Arabic support, and multi-currency checkout.',
-    client: { company_name: 'Al-Khaleej Retail Group', contact_name: 'Tariq Al-Mansoor', email: 'tariq@alkhaleej.ae' },
-  },
-  {
-    id: '11111111-1111-1111-1111-111111111102',
-    title: 'LuxBrand Paris Complete Digital Rebrand',
-    package_type: 'Brand Identity & Design',
-    budget: 32000.0,
-    deadline: '2026-08-30',
-    status: 'In Progress',
-    progress_percentage: 40,
-    priority: 'high',
-    client_id: '44444444-4444-4444-4444-444444444402',
-    notes: 'Luxury typography, motion graphics guidelines, and high-fidelity wireframes.',
-    client: { company_name: 'LuxBrand Paris', contact_name: 'Sophie Laurent', email: 'sophie@luxbrand.fr' },
-  },
-]
-
-const seedTasks: CRMTaskItem[] = [
-  {
-    id: '22222222-2222-2222-2222-222222222201',
-    project_id: '11111111-1111-1111-1111-111111111101',
-    project_title: 'Al-Khaleej E-Commerce Headless Storefront',
-    step_order: 1,
-    title: 'Store Strategy & Wireframes',
-    description: 'Design wireframes and user flow architecture for high conversion in GCC market.',
-    role_required: 'UI/UX Designer',
-    status: 'Completed',
-    due_date: '2026-07-20',
-    deliverable_type: 'Figma Prototype URL',
-    deliverable_url: 'https://figma.com/file/alkhaleej-store-wireframes-v2',
-  },
-  {
-    id: '22222222-2222-2222-2222-222222222202',
-    project_id: '11111111-1111-1111-1111-111111111101',
-    project_title: 'Al-Khaleej E-Commerce Headless Storefront',
-    step_order: 2,
-    title: 'Shopify Custom Headless Development',
-    description: 'Build Next.js 16 storefront connected to Shopify Storefront API with custom cart drawer.',
-    role_required: 'Frontend Developer',
-    status: 'Completed',
-    due_date: '2026-08-05',
-    deliverable_type: 'Vercel Staging URL',
-    deliverable_url: 'https://alkhaleej-storefront-staging.vercel.app',
-  },
-  {
-    id: '22222222-2222-2222-2222-222222222203',
-    project_id: '11111111-1111-1111-1111-111111111101',
-    project_title: 'Al-Khaleej E-Commerce Headless Storefront',
-    step_order: 3,
-    title: 'Product Catalog Import & SEO Setup',
-    description: 'Migrate 450 SKUs, format Arabic meta tags, and configure structured data schema.',
-    role_required: 'SEO Specialist',
-    status: 'In Progress',
-    due_date: '2026-08-20',
-    deliverable_type: 'SEO Audit Report & XML Sitemap',
-  },
-  {
-    id: '22222222-2222-2222-2222-222222222204',
-    project_id: '11111111-1111-1111-1111-111111111101',
-    project_title: 'Al-Khaleej E-Commerce Headless Storefront',
-    step_order: 4,
-    title: 'Cross-Browser & Checkout QA Testing',
-    description: 'Test Apple Pay, Mada, credit card checkout, and mobile responsiveness on iOS/Android.',
-    role_required: 'QA Tester',
-    status: 'Locked',
-    due_date: '2026-09-01',
-    deliverable_type: 'QA Sign-off Matrix & Bug Report',
-  },
-]
+// Clean initial arrays — zero demo content as requested by user
+const seedProjects: any[] = []
+const seedTasks: CRMTaskItem[] = []
 
 function TeamPortalContent() {
   const searchParams = useSearchParams()
@@ -99,6 +20,56 @@ function TeamPortalContent() {
   const [projects, setProjects] = useState<any[]>(seedProjects)
   const [tasks, setTasks] = useState<CRMTaskItem[]>(seedTasks)
   const [selectedProject, setSelectedProject] = useState<any | null>(null)
+
+  useEffect(() => {
+    async function loadData() {
+      try {
+        const pRes = await fetch('/api/crm/projects').catch(() => null)
+        let loadedApi = false
+        if (pRes && pRes.ok) {
+          const pData = await pRes.json()
+          if (pData.projects && pData.projects.length > 0) {
+            setProjects(pData.projects)
+            loadedApi = true
+            const allFetchedTasks: CRMTaskItem[] = []
+            pData.projects.forEach((p: any) => {
+              if (p.tasks) {
+                p.tasks.forEach((t: any) => {
+                  allFetchedTasks.push({
+                    id: t.id,
+                    project_id: p.id,
+                    project_title: p.title,
+                    step_order: t.step_order,
+                    title: t.title,
+                    description: t.description,
+                    role_required: t.role_required,
+                    status: t.status,
+                    due_date: t.due_date,
+                    deliverable_type: t.deliverable_type,
+                    deliverable_url: t.deliverable_url,
+                  })
+                })
+              }
+            })
+            if (allFetchedTasks.length > 0) setTasks(allFetchedTasks)
+          }
+        }
+
+        if (!loadedApi) {
+          const lp = localStorage.getItem('webotixs_crm_projects')
+          const lt = localStorage.getItem('webotixs_crm_tasks')
+          if (lp) setProjects(JSON.parse(lp))
+          if (lt) setTasks(JSON.parse(lt))
+        }
+      } catch (err) {
+        const lp = localStorage.getItem('webotixs_crm_projects')
+        const lt = localStorage.getItem('webotixs_crm_tasks')
+        if (lp) setProjects(JSON.parse(lp))
+        if (lt) setTasks(JSON.parse(lt))
+      }
+    }
+    loadData()
+  }, [])
 
   const handleCompleteTask = async (taskId: string, deliverableUrl: string, notes: string) => {
     const target = tasks.find((t) => t.id === taskId)
@@ -118,11 +89,22 @@ function TeamPortalContent() {
     })
 
     setTasks(updatedTasks)
+    localStorage.setItem('webotixs_crm_tasks', JSON.stringify(updatedTasks))
+    
+    // Also notify backend API if connected
+    fetch('/api/crm/tasks/complete', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ taskId, deliverableUrl, notes }),
+    }).catch(() => null)
+
     alert(`✅ Task Complete & Deliverable Submitted! Next pipeline task automatically unlocked.`)
   }
 
   const handleTaskStatusChange = (taskId: string, newStatus: CRMTaskItem['status']) => {
-    setTasks((prev) => prev.map((t) => (t.id === taskId ? { ...t, status: newStatus } : t)))
+    const updated = tasks.map((t) => (t.id === taskId ? { ...t, status: newStatus } : t))
+    setTasks(updated)
+    localStorage.setItem('webotixs_crm_tasks', JSON.stringify(updated))
   }
 
   return (
