@@ -59,16 +59,22 @@ export default function AdminLoginPage() {
 
     // Determine target board based on email or password pattern
     let targetUrl = '/admin/crm?role=Super+Admin'
-    if (emailLower.includes('client') || emailLower.includes('alkhaleej') || emailLower.includes('luxbrand') || emailLower.includes('finch') || data.password.includes('Client')) {
-      targetUrl = '/admin/crm?role=Client'
+    if (emailLower.includes('alkhaleej') || emailLower.includes('tariq')) {
+      targetUrl = '/client-portal?client=Al-Khaleej&email=' + encodeURIComponent(data.email)
+    } else if (emailLower.includes('luxbrand') || emailLower.includes('sophie')) {
+      targetUrl = '/client-portal?client=LuxBrand&email=' + encodeURIComponent(data.email)
+    } else if (emailLower.includes('finch') || emailLower.includes('robert')) {
+      targetUrl = '/client-portal?client=Finch&email=' + encodeURIComponent(data.email)
+    } else if (emailLower.includes('client') || data.password.includes('Client')) {
+      targetUrl = '/client-portal?client=Al-Khaleej&email=' + encodeURIComponent(data.email)
     } else if (emailLower.includes('designer') || emailLower.includes('sarah')) {
-      targetUrl = '/admin/crm?role=UI%2FUX+Designer'
+      targetUrl = '/team-portal?role=UI%2FUX+Designer&email=' + encodeURIComponent(data.email)
     } else if (emailLower.includes('developer') || emailLower.includes('marcus')) {
-      targetUrl = '/admin/crm?role=Frontend+Developer'
+      targetUrl = '/team-portal?role=Frontend+Developer&email=' + encodeURIComponent(data.email)
     } else if (emailLower.includes('qa') || emailLower.includes('tester')) {
-      targetUrl = '/admin/crm?role=QA+Tester'
+      targetUrl = '/team-portal?role=QA+Tester&email=' + encodeURIComponent(data.email)
     } else if (emailLower.includes('seo') || emailLower.includes('writer') || emailLower.includes('priya')) {
-      targetUrl = '/admin/crm?role=SEO+Specialist'
+      targetUrl = '/team-portal?role=SEO+Specialist&email=' + encodeURIComponent(data.email)
     }
 
     // Check predefined / generated credentials
