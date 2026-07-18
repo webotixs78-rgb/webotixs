@@ -1,6 +1,7 @@
 'use client'
 
 import React, { useState, useEffect } from 'react'
+import { useSearchParams } from 'next/navigation'
 import { CRMRoleSwitcher, CRMRole } from './CRMRoleSwitcher'
 import { AdminDashboardView } from './AdminDashboardView'
 import { TeamDashboardView } from './TeamDashboardView'
@@ -168,6 +169,7 @@ const seedInquiries = [
 ]
 
 export function AgencyCRMClientHub() {
+  const searchParams = useSearchParams()
   const [currentRole, setCurrentRole] = useState<CRMRole>('Super Admin')
   const [projects, setProjects] = useState<any[]>(seedProjects)
   const [tasks, setTasks] = useState<CRMTaskItem[]>(seedTasks)
@@ -176,6 +178,27 @@ export function AgencyCRMClientHub() {
   const [inquiries, setInquiries] = useState<any[]>(seedInquiries)
   const [selectedProject, setSelectedProject] = useState<any | null>(null)
   const [loading, setLoading] = useState<boolean>(false)
+
+  // Sync role from URL param or cookie session
+  useEffect(() => {
+    const roleParam = searchParams.get('role') as CRMRole
+    const validRoles: CRMRole[] = [
+      'Super Admin',
+      'Admin',
+      'Project Manager',
+      'UI/UX Designer',
+      'WordPress Developer',
+      'Frontend Developer',
+      'Backend Developer',
+      'SEO Specialist',
+      'Content Writer',
+      'QA Tester',
+      'Client',
+    ]
+    if (roleParam && validRoles.includes(roleParam)) {
+      setCurrentRole(roleParam)
+    }
+  }, [searchParams])
 
   // Fetch from APIs on load
   useEffect(() => {

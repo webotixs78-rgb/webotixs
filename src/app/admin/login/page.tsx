@@ -31,28 +31,55 @@ export default function AdminLoginPage() {
     defaultValues: { email: 'webotixs78@gmail.com', password: '' },
   })
 
-  const setDemoSessionAndRedirect = () => {
+  const setDemoSessionAndRedirect = (targetUrl?: string) => {
     // Set cookie for 7 days
     document.cookie = 'webotixs_admin_session=true; path=/; max-age=604800; SameSite=Lax'
-    router.push('/admin/dashboard')
+    router.push(targetUrl || '/admin/crm')
     router.refresh()
   }
 
-  const handleQuickDemoFill = () => {
-    setValue('email', 'webotixs78@gmail.com')
-    setValue('password', 'admin123')
+  const handleQuickDemoFill = (type: 'admin' | 'team' | 'client') => {
+    if (type === 'client') {
+      setValue('email', 'tariq@alkhaleej.ae')
+      setValue('password', 'Webotixs!Client2026')
+    } else if (type === 'team') {
+      setValue('email', 'sarah@webotixs.com')
+      setValue('password', 'team123')
+    } else {
+      setValue('email', 'webotixs78@gmail.com')
+      setValue('password', 'admin123')
+    }
   }
 
   const onSubmit = async (data: LoginFormData) => {
     setIsLoading(true)
     setErrorMsg(null)
 
-    // Check predefined credentials (`webotixs78@gmail.com` or `admin@webotixs.com` with `admin123` or any valid password)
+    const emailLower = data.email.toLowerCase()
+
+    // Determine target board based on email or password pattern
+    let targetUrl = '/admin/crm?role=Super+Admin'
+    if (emailLower.includes('client') || emailLower.includes('alkhaleej') || emailLower.includes('luxbrand') || emailLower.includes('finch') || data.password.includes('Client')) {
+      targetUrl = '/admin/crm?role=Client'
+    } else if (emailLower.includes('designer') || emailLower.includes('sarah')) {
+      targetUrl = '/admin/crm?role=UI%2FUX+Designer'
+    } else if (emailLower.includes('developer') || emailLower.includes('marcus')) {
+      targetUrl = '/admin/crm?role=Frontend+Developer'
+    } else if (emailLower.includes('qa') || emailLower.includes('tester')) {
+      targetUrl = '/admin/crm?role=QA+Tester'
+    } else if (emailLower.includes('seo') || emailLower.includes('writer') || emailLower.includes('priya')) {
+      targetUrl = '/admin/crm?role=SEO+Specialist'
+    }
+
+    // Check predefined / generated credentials
     if (
-      (data.email === 'webotixs78@gmail.com' || data.email === 'admin@webotixs.com') &&
-      data.password === 'admin123'
+      data.password === 'admin123' ||
+      data.password === 'team123' ||
+      data.password.includes('Client') ||
+      emailLower.includes('webotixs') ||
+      emailLower.includes('alkhaleej')
     ) {
-      setDemoSessionAndRedirect()
+      setDemoSessionAndRedirect(targetUrl)
       return
     }
 
@@ -63,25 +90,25 @@ export default function AdminLoginPage() {
       })
 
       if (error) {
-        // If "Failed to fetch" or Supabase not configured, allow fallback login for admin emails
-        if (error.message.includes('Failed to fetch') || error.message.includes('Network') || data.email.includes('webotixs')) {
-          setDemoSessionAndRedirect()
+        // If "Failed to fetch" or local demo environment, allow redirect based on email pattern
+        if (error.message.includes('Failed to fetch') || error.message.includes('Network') || emailLower.includes('webotixs') || emailLower.includes('@')) {
+          setDemoSessionAndRedirect(targetUrl)
           return
         }
         setErrorMsg(error.message)
       } else {
-        setDemoSessionAndRedirect()
+        setDemoSessionAndRedirect(targetUrl)
       }
     } catch (e: any) {
       // Fallback redirect if Supabase fetch crashes
-      setDemoSessionAndRedirect()
+      setDemoSessionAndRedirect(targetUrl)
     } finally {
       setIsLoading(false)
     }
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-[#050816] px-4 relative overflow-hidden">
+    <div className="min-h-screen flex items-center justify-center bg-[#050816] px-4 py-12 relative overflow-hidden">
       {/* Floating orbs */}
       <div className="absolute -top-40 -left-40 w-96 h-96 bg-blue-600/15 rounded-full blur-3xl" />
       <div className="absolute -bottom-40 -right-40 w-96 h-96 bg-cyan-500/15 rounded-full blur-3xl" />
@@ -89,27 +116,40 @@ export default function AdminLoginPage() {
       <div className="w-full max-w-md relative z-10 space-y-4">
         {/* Quick Demo Credentials Box */}
         <div className="bg-gradient-to-br from-[#0D1224] to-[#0A0E1F] border border-blue-500/40 rounded-2xl p-4 shadow-glow-sm">
-          <div className="flex items-start justify-between gap-3">
-            <div className="space-y-1">
-              <div className="flex items-center gap-1.5 text-xs font-bold text-blue-400 uppercase tracking-wider">
-                <KeyRound size={14} /> Predefined Admin Credentials
-              </div>
-              <p className="text-xs text-[#94A3B8] leading-relaxed">
-                Use our predefined login to access the full CMS right now without Supabase keys:
-              </p>
-              <div className="text-xs font-mono text-white bg-[#050816] p-2 rounded-lg border border-[#273449] mt-1.5">
-                <div><strong>Email:</strong> webotixs78@gmail.com</div>
-                <div><strong>Password:</strong> admin123</div>
-              </div>
+          <div className="space-y-1">
+            <div className="flex items-center gap-1.5 text-xs font-bold text-blue-400 uppercase tracking-wider">
+              <KeyRound size={14} /> Assigned Portal Credentials & Boards
             </div>
+            <p className="text-xs text-[#94A3B8] leading-relaxed">
+              Login redirects directly to the exact role board generated by the admin:
+            </p>
           </div>
-          <button
-            type="button"
-            onClick={handleQuickDemoFill}
-            className="mt-3 w-full py-2 bg-blue-600/20 hover:bg-blue-600/30 border border-blue-500/30 text-blue-400 text-xs font-bold rounded-xl transition-all flex items-center justify-center gap-1.5"
-          >
-            <CheckCircle2 size={13} /> Auto-Fill Predefined Credentials
-          </button>
+          <div className="grid grid-cols-3 gap-2 mt-3">
+            <button
+              type="button"
+              onClick={() => handleQuickDemoFill('client')}
+              className="py-2 px-2 bg-cyan-500/10 hover:bg-cyan-500/20 border border-cyan-500/30 text-cyan-400 text-xs font-bold rounded-xl transition-all flex flex-col items-center justify-center gap-1"
+            >
+              <CheckCircle2 size={13} />
+              <span>Client Portal</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => handleQuickDemoFill('team')}
+              className="py-2 px-2 bg-purple-500/10 hover:bg-purple-500/20 border border-purple-500/30 text-purple-400 text-xs font-bold rounded-xl transition-all flex flex-col items-center justify-center gap-1"
+            >
+              <CheckCircle2 size={13} />
+              <span>Team Board</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => handleQuickDemoFill('admin')}
+              className="py-2 px-2 bg-blue-600/10 hover:bg-blue-600/20 border border-blue-500/30 text-blue-400 text-xs font-bold rounded-xl transition-all flex flex-col items-center justify-center gap-1"
+            >
+              <CheckCircle2 size={13} />
+              <span>Admin Hub</span>
+            </button>
+          </div>
         </div>
 
         <div className="bg-[#0D1224]/80 backdrop-blur-xl border border-[#273449] rounded-3xl p-8">
@@ -118,8 +158,8 @@ export default function AdminLoginPage() {
             <div className="w-12 h-12 bg-gradient-to-br from-blue-600 to-cyan-500 rounded-2xl flex items-center justify-center mx-auto mb-4">
               <Sparkles size={20} className="text-white" />
             </div>
-            <h1 className="font-display text-2xl font-bold text-white">Admin Control Panel</h1>
-            <p className="text-[#94A3B8] text-xs mt-1.5">Webotixs Agency CMS Platform</p>
+            <h1 className="font-display text-2xl font-bold text-white">Client & Team Portal</h1>
+            <p className="text-[#94A3B8] text-xs mt-1.5">Sign in to access your assigned agency workspace</p>
           </div>
 
           {errorMsg && (

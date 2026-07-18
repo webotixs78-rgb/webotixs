@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Menu, X, ChevronDown, ArrowRight, Globe, Sun, Moon } from 'lucide-react'
+import { Menu, X, ChevronDown, ArrowRight, Globe, Sun, Moon, Lock, UserCheck } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { useTheme } from '@/components/providers/ThemeProvider'
 
@@ -207,6 +207,15 @@ export default function Header() {
               </div>
 
               <Link
+                href="/admin/login"
+                className="flex items-center gap-1.5 px-3.5 py-2 border border-blue-500/30 rounded-xl text-xs font-semibold text-blue-400 hover:text-white hover:bg-blue-600/20 hover:border-blue-500/60 transition-all duration-300 shadow-sm"
+                title="Client & Team Portal Login"
+              >
+                <Lock size={13} className="text-blue-400 shrink-0" />
+                <span>Portal Login</span>
+              </Link>
+
+              <Link
                 href="/contact"
                 className="px-5 py-2.5 bg-gradient-to-r from-primary-from to-primary-to text-white text-sm font-semibold rounded-xl hover:shadow-glow-sm transition-all duration-300 hover:scale-105"
               >
@@ -309,8 +318,16 @@ export default function Header() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.3 }}
-                className="mt-4"
+                className="mt-4 flex flex-col gap-2.5"
               >
+                <Link
+                  href="/admin/login"
+                  className="w-full py-3.5 px-4 text-center border border-blue-500/30 bg-blue-600/10 hover:bg-blue-600/20 text-blue-400 font-semibold rounded-2xl flex items-center justify-center gap-2 text-sm transition-all"
+                >
+                  <Lock size={15} className="text-blue-400" />
+                  <span>Client & Team Portal Login</span>
+                </Link>
+
                 <Link
                   href="/contact"
                   className="block w-full py-4 text-center bg-gradient-to-r from-primary-from to-primary-to text-white font-semibold rounded-2xl"
