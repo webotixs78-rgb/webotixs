@@ -67,14 +67,62 @@
     <priority>0.5000</priority>
   </url>
   <url>
+    <loc>https://www.webotixs.com/dallas-tx</loc>
+    <lastmod>2026-09-16T13:00:00+00:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8000</priority>
+  </url>
+  <url>
+    <loc>https://www.webotixs.com/las-vegas-nv</loc>
+    <lastmod>2026-09-16T13:00:00+00:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8000</priority>
+  </url>
+  <url>
+    <loc>https://www.webotixs.com/boston-ma</loc>
+    <lastmod>2026-09-16T13:00:00+00:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8000</priority>
+  </url>
+  <url>
+    <loc>https://www.webotixs.com/leeds-uk</loc>
+    <lastmod>2026-09-16T13:00:00+00:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8000</priority>
+  </url>
+  <url>
+    <loc>https://www.webotixs.com/phoenix-az</loc>
+    <lastmod>2026-09-16T13:00:00+00:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8000</priority>
+  </url>
+  <url>
     <loc>https://www.webotixs.com/locations/dallas-tx</loc>
-    <lastmod>2026-09-11T23:30:00+00:00</lastmod>
+    <lastmod>2026-09-16T13:00:00+00:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8000</priority>
   </url>
   <url>
     <loc>https://www.webotixs.com/locations/las-vegas-nv</loc>
-    <lastmod>2026-09-11T23:30:00+00:00</lastmod>
+    <lastmod>2026-09-16T13:00:00+00:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8000</priority>
+  </url>
+  <url>
+    <loc>https://www.webotixs.com/locations/boston-ma</loc>
+    <lastmod>2026-09-16T13:00:00+00:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8000</priority>
+  </url>
+  <url>
+    <loc>https://www.webotixs.com/locations/leeds-uk</loc>
+    <lastmod>2026-09-16T13:00:00+00:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8000</priority>
+  </url>
+  <url>
+    <loc>https://www.webotixs.com/locations/phoenix-az</loc>
+    <lastmod>2026-09-16T13:00:00+00:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8000</priority>
   </url>

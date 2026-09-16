@@ -18,13 +18,30 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     '/privacy-policy',
     '/terms',
     '/cookie-policy',
-    '/locations/dallas-tx',
-    '/locations/las-vegas-nv',
   ].map((route) => ({
     url: `${baseUrl}${route}`,
     lastModified: new Date().toISOString(),
     changeFrequency: 'daily' as const,
     priority: route === '' ? 1.0 : 0.8,
+  }))
+
+  // Local SEO landing pages
+  const locationRoutes = [
+    '/dallas-tx',
+    '/las-vegas-nv',
+    '/boston-ma',
+    '/leeds-uk',
+    '/phoenix-az',
+    '/locations/dallas-tx',
+    '/locations/las-vegas-nv',
+    '/locations/boston-ma',
+    '/locations/leeds-uk',
+    '/locations/phoenix-az',
+  ].map((route) => ({
+    url: `${baseUrl}${route}`,
+    lastModified: new Date().toISOString(),
+    changeFrequency: 'weekly' as const,
+    priority: 0.8,
   }))
 
   // Dynamic Service routes
@@ -51,5 +68,5 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.6,
   }))
 
-  return [...staticRoutes, ...serviceRoutes, ...portfolioRoutes, ...blogRoutes]
+  return [...staticRoutes, ...locationRoutes, ...serviceRoutes, ...portfolioRoutes, ...blogRoutes]
 }
