@@ -25,6 +25,9 @@ const footerLinks = {
   locations: [
     { label: 'Dallas, TX', href: '/dallas-tx' },
     { label: 'Las Vegas, NV', href: '/las-vegas-nv' },
+    { label: 'Boston, MA', href: '/boston-ma' },
+    { label: 'Leeds, UK', href: '/leeds-uk' },
+    { label: 'Phoenix, AZ', href: '/phoenix-az' },
   ],
 }
 
