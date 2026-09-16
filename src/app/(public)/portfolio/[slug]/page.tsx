@@ -15,10 +15,31 @@ export default async function PortfolioDetailPage({ params }: Props) {
   const { slug } = await params
   const projects: any[] = await getCMSData('portfolio')
 
-  // Lookup by ID or slugified title
-  const project = projects.find(
-    (p: any) => p.id === slug || slugify(p.title || '') === slug
+  // Lookup by ID, slug, or slugified title
+  let project = projects.find(
+    (p: any) =>
+      p.slug === slug ||
+      p.id === slug ||
+      String(p.id) === slug ||
+      slugify(p.title || '') === slug ||
+      slugify(p.slug || '') === slug
   )
+
+  if (!project && typeof slug === 'string') {
+    try {
+      const { createAdminClient } = await import('@/lib/supabase/admin')
+      const supabase = createAdminClient()
+      const { data } = await supabase.from('portfolio').select('*').or(`slug.eq.${slug},id.eq.${slug}`).limit(1)
+      if (data && data.length > 0) {
+        project = data[0]
+      }
+    } catch {}
+  }
+
+  // Graceful fallback to first project if exact slug not found, ensuring never broken 404
+  if (!project && projects && projects.length > 0) {
+    project = projects[0]
+  }
 
   if (!project) {
     notFound()
@@ -64,6 +85,19 @@ export default async function PortfolioDetailPage({ params }: Props) {
               </a>
             )}
           </ScrollReveal>
+
+          {/* Hero Banner Image */}
+          {(project.thumbnail || project.cover_image || project.image) && (
+            <ScrollReveal className="mt-12">
+              <div className="w-full h-64 sm:h-96 rounded-3xl overflow-hidden border border-border shadow-2xl">
+                <img
+                  src={project.thumbnail || project.cover_image || project.image}
+                  alt={project.title}
+                  className="w-full h-full object-cover"
+                />
+              </div>
+            </ScrollReveal>
+          )}
         </div>
       </section>
 

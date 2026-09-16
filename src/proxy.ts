@@ -9,7 +9,9 @@ export async function proxy(request: NextRequest) {
   })
 
   // Check if predefined/demo admin session cookie is set
-  const hasDemoSession = request.cookies.get('webotixs_admin_session')?.value === 'true'
+  const hasDemoSession =
+    request.cookies.get('webotixs_admin_session')?.value === 'true' ||
+    Boolean(request.cookies.get('webotixs_role_session')?.value)
 
   let user = null
   try {

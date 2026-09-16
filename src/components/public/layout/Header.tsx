@@ -47,7 +47,76 @@ export default function Header() {
   useEffect(() => {
     const handleScroll = () => setIsScrolled(window.scrollY > 20)
     window.addEventListener('scroll', handleScroll, { passive: true })
-    return () => window.removeEventListener('scroll', handleScroll)
+
+    // Restore saved language preference
+    try {
+      const savedLang = localStorage.getItem('webotixs_lang') || 'EN'
+      const savedDir = localStorage.getItem('webotixs_dir') || 'ltr'
+      setCurrentLang(savedLang)
+      document.documentElement.dir = savedDir
+      document.documentElement.lang = savedLang.toLowerCase()
+    } catch {}
+
+    // Initialize Google Translate Element if not loaded
+    if (!(window as any).googleTranslateElementInit) {
+      ;(window as any).googleTranslateElementInit = () => {
+        if ((window as any).google?.translate?.TranslateElement) {
+          new (window as any).google.translate.TranslateElement(
+            {
+              pageLanguage: 'en',
+              includedLanguages: 'en,ar,zh-CN,ur',
+              autoDisplay: false,
+            },
+            'google_translate_element'
+          )
+        }
+      }
+
+      const scriptId = 'google-translate-script'
+      if (!document.getElementById(scriptId)) {
+        const script = document.createElement('script')
+        script.id = scriptId
+        script.src = 'https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit'
+        script.async = true
+        document.body.appendChild(script)
+      }
+    }
+
+    // Active DOM Cleaner: Suppress Google Translate Top Banner and enforce 0px top
+    const cleanGoogleTranslateDOM = () => {
+      try {
+        if (document.body.style.top && document.body.style.top !== '0px') {
+          document.body.style.setProperty('top', '0px', 'important')
+        }
+        if (document.documentElement.style.top && document.documentElement.style.top !== '0px') {
+          document.documentElement.style.setProperty('top', '0px', 'important')
+        }
+        const banners = document.querySelectorAll(
+          '.goog-te-banner-frame, iframe.skiptranslate, body > .skiptranslate:not(#google_translate_element), #goog-gt-tt, .VIpgJd-ZVi9od-ORHb-OEVmcd, .VIpgJd-ZVi9od-aZ2wEe-wOHMyf, .VIpgJd-ZVi9od-ORHb'
+        )
+        banners.forEach((el) => {
+          if (el && (el as HTMLElement).style) {
+            ;(el as HTMLElement).style.setProperty('display', 'none', 'important')
+            ;(el as HTMLElement).style.setProperty('visibility', 'hidden', 'important')
+            ;(el as HTMLElement).style.setProperty('height', '0px', 'important')
+            ;(el as HTMLElement).style.setProperty('opacity', '0', 'important')
+            ;(el as HTMLElement).style.setProperty('pointer-events', 'none', 'important')
+          }
+        })
+      } catch {}
+    }
+
+    const observer = new MutationObserver(() => {
+      cleanGoogleTranslateDOM()
+    })
+    observer.observe(document.body, { childList: true, subtree: false, attributes: true, attributeFilter: ['style', 'class'] })
+    observer.observe(document.documentElement, { attributes: true, attributeFilter: ['style'] })
+    cleanGoogleTranslateDOM()
+
+    return () => {
+      window.removeEventListener('scroll', handleScroll)
+      observer.disconnect()
+    }
   }, [])
 
   useEffect(() => {
@@ -61,10 +130,37 @@ export default function Header() {
     setLangOpen(false)
     document.documentElement.dir = dir
     document.documentElement.lang = code.toLowerCase()
+    try {
+      localStorage.setItem('webotixs_lang', code)
+      localStorage.setItem('webotixs_dir', dir)
+    } catch {}
+
+    const targetLang = code === 'ZH' ? 'zh-CN' : code.toLowerCase()
+    const googCode = code === 'EN' ? 'en' : targetLang
+
+    // Set googtrans cookies across paths and host domain
+    document.cookie = `googtrans=/en/${googCode}; path=/; max-age=31536000`
+    document.cookie = `googtrans=/en/${googCode}; path=/; domain=${window.location.hostname}; max-age=31536000`
+
+    // Directly update hidden translation combo box if ready
+    const combo = document.querySelector('.goog-te-combo') as HTMLSelectElement | null
+    if (combo) {
+      combo.value = googCode
+      combo.dispatchEvent(new Event('change', { bubbles: true }))
+    } else if (code !== 'EN') {
+      // If combo box is still loading or needs hard refresh to trigger
+      window.location.reload()
+    } else if (code === 'EN') {
+      // If returning to English and combo not loaded, clear cookies and reload
+      document.cookie = `googtrans=; path=/; max-age=0`
+      document.cookie = `googtrans=; path=/; domain=${window.location.hostname}; max-age=0`
+      window.location.reload()
+    }
   }
 
   return (
     <>
+      <div id="google_translate_element" className="hidden" style={{ display: 'none' }} />
       <motion.header
         initial={{ y: -100, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
@@ -80,7 +176,7 @@ export default function Header() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-20">
             {/* Logo */}
-            <Link href="/" className="flex items-center gap-2 group">
+            <Link href="/" aria-label="Webotixs Homepage" className="flex items-center gap-2 group">
               <div className="relative w-8 h-8">
                 <div className="absolute inset-0 bg-gradient-to-br from-primary-from to-primary-to rounded-lg" />
                 <div className="absolute inset-0.5 bg-background rounded-md flex items-center justify-center">
@@ -208,7 +304,8 @@ export default function Header() {
 
               <Link
                 href="/admin/login"
-                className="flex items-center gap-1.5 px-3.5 py-2 border border-blue-500/30 rounded-xl text-xs font-semibold text-blue-400 hover:text-white hover:bg-blue-600/20 hover:border-blue-500/60 transition-all duration-300 shadow-sm"
+                aria-label="Access Client and Team Portal Login"
+                className="btn-float-rtl-glass flex items-center gap-1.5 px-3.5 py-2 border border-blue-500/30 rounded-xl text-xs font-bold text-blue-400"
                 title="Client & Team Portal Login"
               >
                 <Lock size={13} className="text-blue-400 shrink-0" />
@@ -217,7 +314,8 @@ export default function Header() {
 
               <Link
                 href="/contact"
-                className="px-5 py-2.5 bg-gradient-to-r from-primary-from to-primary-to text-white text-sm font-semibold rounded-xl hover:shadow-glow-sm transition-all duration-300 hover:scale-105"
+                aria-label="Get Started with Webotixs Project Consultation"
+                className="btn-float-rtl px-5 py-2.5 bg-gradient-to-r from-primary-from to-primary-to text-white text-sm font-bold rounded-xl shadow-glow-sm"
               >
                 Get Started
               </Link>
@@ -312,6 +410,36 @@ export default function Header() {
                 >
                   Switch to {theme === 'dark' ? 'Light' : 'Dark'}
                 </button>
+              </motion.div>
+
+              {/* Mobile Language Switcher */}
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.28 }}
+                className="mt-3 p-4 bg-background-secondary rounded-2xl border border-border/50"
+              >
+                <div className="text-xs font-semibold text-text-gray mb-2.5 flex items-center gap-1.5">
+                  <Globe size={13} className="text-primary" />
+                  <span>Select Language</span>
+                </div>
+                <div className="grid grid-cols-2 gap-2">
+                  {languages.map((l) => (
+                    <button
+                      key={l.code}
+                      onClick={() => handleSelectLang(l.code, l.dir)}
+                      className={cn(
+                        'flex items-center justify-between px-3 py-2 rounded-xl text-xs font-medium transition-colors text-left',
+                        currentLang === l.code
+                          ? 'bg-primary text-white shadow-md'
+                          : 'bg-white/5 text-text-gray hover:text-text-white'
+                      )}
+                    >
+                      <span>{l.name}</span>
+                      <span className="text-[10px] opacity-70">{l.code}</span>
+                    </button>
+                  ))}
+                </div>
               </motion.div>
 
               <motion.div

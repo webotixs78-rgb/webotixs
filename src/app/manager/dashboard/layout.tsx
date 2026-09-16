@@ -37,7 +37,7 @@ export default function ManagerDashboardLayout({ children }: { children: React.R
     document.cookie = 'webotixs_role_session=; path=/; max-age=0'
     document.cookie = 'webotixs_user_id=; path=/; max-age=0'
     document.cookie = 'webotixs_admin_session=; path=/; max-age=0'
-    router.push('/admin/login')
+    window.location.href = '/admin/login'
   }
 
   if (unauthorized) {

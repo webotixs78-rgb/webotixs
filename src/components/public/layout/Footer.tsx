@@ -22,6 +22,10 @@ const footerLinks = {
     { label: 'Terms of Service', href: '/terms' },
     { label: 'Cookie Policy', href: '/cookie-policy' },
   ],
+  locations: [
+    { label: 'Dallas, TX', href: '/locations/dallas-tx' },
+    { label: 'Las Vegas, NV', href: '/locations/las-vegas-nv' },
+  ],
 }
 
 export default function Footer() {
@@ -46,12 +50,14 @@ export default function Footer() {
               <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
                 <Link
                   href="/contact"
+                  aria-label="Start Your Web Design Project with Webotixs"
                   className="px-8 py-4 bg-gradient-to-r from-primary-from to-primary-to text-white font-semibold rounded-2xl hover:shadow-glow-md transition-all duration-300 hover:scale-105 flex items-center gap-2"
                 >
                   Start Your Project <ArrowRight size={18} />
                 </Link>
                 <Link
                   href="/portfolio"
+                  aria-label="View Webotixs Portfolio Case Studies"
                   className="px-8 py-4 glass border border-border text-text-white font-semibold rounded-2xl hover:border-primary/50 transition-all duration-300"
                 >
                   View Our Work
@@ -65,7 +71,7 @@ export default function Footer() {
         <div className="py-16 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-12">
           {/* Brand */}
           <div className="lg:col-span-2">
-            <Link href="/" className="flex items-center gap-2 mb-6 group">
+            <Link href="/" aria-label="Webotixs Homepage" className="flex items-center gap-2 mb-6 group">
               <div className="relative w-8 h-8">
                 <div className="absolute inset-0 bg-gradient-to-br from-primary-from to-primary-to rounded-lg" />
                 <div className="absolute inset-0.5 bg-background-secondary rounded-md flex items-center justify-center">
@@ -78,32 +84,70 @@ export default function Footer() {
               We are a premium digital agency crafting beautiful websites, mobile apps, and brand identities that help businesses grow in the digital age.
             </p>
             <div className="flex flex-col gap-3 mb-8">
-              <a href="mailto:hello@webotixs.com" className="flex items-center gap-2 text-text-gray hover:text-primary transition-colors text-sm">
-                <Mail size={14} /> hello@webotixs.com
+              <a href="mailto:info@webotixs.com" aria-label="Send email to info@webotixs.com" className="flex items-center gap-2 text-text-gray hover:text-primary transition-colors text-sm">
+                <Mail size={14} /> info@webotixs.com
               </a>
-              <a href="tel:+1234567890" className="flex items-center gap-2 text-text-gray hover:text-primary transition-colors text-sm">
-                <Phone size={14} /> +1 (234) 567-890
+              <a href="tel:+12089055973" aria-label="Call US office +1 (208) 905-5973" className="flex items-center gap-2 text-text-gray hover:text-primary transition-colors text-sm">
+                <Phone size={14} /> +1 (208) 905-5973
               </a>
-              <span className="flex items-center gap-2 text-text-gray text-sm">
-                <MapPin size={14} /> Dubai, UAE · Remote Worldwide
+              <a href="tel:+923092715559" aria-label="Call Pakistan office +92 309 2715559" className="flex items-center gap-2 text-text-gray hover:text-primary transition-colors text-sm">
+                <Phone size={14} /> +92 309 2715559
+              </a>
+              <span className="flex items-start gap-2 text-text-gray text-sm leading-relaxed">
+                <MapPin size={16} className="mt-0.5 flex-shrink-0" /> Mz floor, Al-Qadir Heights, Kalma Chowk Flyover، Babar Block Garden Town, Lahore, 54000, Pakistan
               </span>
             </div>
-            {/* Social */}
-            <div className="flex items-center gap-3">
+            {/* Social & Review Platforms */}
+            <div className="flex flex-wrap items-center gap-3">
               {[
-                { icon: Twitter, href: '#', label: 'Twitter' },
-                { icon: Linkedin, href: '#', label: 'LinkedIn' },
-                { icon: Instagram, href: '#', label: 'Instagram' },
-                { icon: Github, href: '#', label: 'GitHub' },
-                { icon: Facebook, href: '#', label: 'Facebook' },
-              ].map(({ icon: Icon, href, label }) => (
+                { type: 'icon', icon: Facebook, href: 'https://www.facebook.com/profile.php?id=61585230680319', label: 'Facebook', hoverColor: 'hover:text-blue-500 hover:border-blue-500/50' },
+                { type: 'icon', icon: Linkedin, href: 'https://www.linkedin.com/in/huzaifa-rao-827444325/', label: 'LinkedIn', hoverColor: 'hover:text-blue-400 hover:border-blue-400/50' },
+                { type: 'icon', icon: Instagram, href: 'https://www.instagram.com/webotixs?igsh=dzRhNjV6cGptNXZp', label: 'Instagram', hoverColor: 'hover:text-pink-500 hover:border-pink-500/50' },
+                {
+                  type: 'svg',
+                  href: 'https://clutch.co/profile/webotixs',
+                  label: 'Clutch Review Profile',
+                  hoverColor: 'hover:text-red-500 hover:border-red-500/50',
+                  svg: (
+                    <svg width={15} height={15} viewBox="0 0 24 24" fill="currentColor">
+                      <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 15h-2v-2h2v2zm0-4h-2V7h2v6z" />
+                    </svg>
+                  )
+                },
+                {
+                  type: 'svg',
+                  href: 'https://www.trustpilot.com/review/webotixs.com',
+                  label: 'Trustpilot Review Profile',
+                  hoverColor: 'hover:text-emerald-400 hover:border-emerald-400/50',
+                  svg: (
+                    <svg width={15} height={15} viewBox="0 0 24 24" fill="currentColor">
+                      <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" />
+                    </svg>
+                  )
+                },
+                {
+                  type: 'svg',
+                  href: 'https://g.page/r/Cbbz0-7qGKZVEBM/review',
+                  label: 'Google Business Reviews',
+                  hoverColor: 'hover:text-blue-400 hover:border-blue-400/50',
+                  svg: (
+                    <svg width={15} height={15} viewBox="0 0 24 24" fill="currentColor">
+                      <path d="M12.48 10.92v3.28h7.84c-.24 1.84-.853 3.187-1.787 4.133-1.147 1.147-2.933 2.4-6.053 2.4-4.827 0-8.6-3.893-8.6-8.72s3.773-8.72 8.6-8.72c2.6 0 4.507 1.027 5.907 2.347l2.307-2.307C18.747 1.44 15.96 0 12.48 0 5.8 0 0 5.4 0 12s5.8 12 12.48 12c3.6 0 6.32-1.187 8.44-3.413 2.16-2.16 2.84-5.213 2.84-7.667 0-.76-.053-1.467-.173-2.053H12.48z" />
+                    </svg>
+                  )
+                },
+              ].map((item) => (
                 <a
-                  key={label}
-                  href={href}
-                  aria-label={label}
-                  className="w-9 h-9 rounded-xl glass border border-border flex items-center justify-center text-text-gray hover:text-primary hover:border-primary/50 transition-all duration-200"
+                  key={item.label}
+                  href={item.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label={item.label}
+                  title={item.label}
+                  className={`w-9 h-9 rounded-xl glass border border-border flex items-center justify-center text-text-gray ${item.hoverColor} transition-all duration-200 hover:scale-110 shadow-sm`}
                 >
-                  <Icon size={15} />
+                  {item.type === 'icon' && item.icon ? <item.icon size={15} /> : item.svg}
+                  <span className="sr-only">{item.label}</span>
                 </a>
               ))}
             </div>
@@ -111,7 +155,7 @@ export default function Footer() {
 
           {/* Services */}
           <div>
-            <h3 className="font-display font-semibold text-text-white mb-5 text-sm uppercase tracking-wider">Services</h3>
+            <p className="font-display font-semibold text-text-white mb-5 text-sm uppercase tracking-wider">Services</p>
             <ul className="flex flex-col gap-3">
               {footerLinks.services.map((link) => (
                 <li key={link.href}>
@@ -125,7 +169,7 @@ export default function Footer() {
 
           {/* Company */}
           <div>
-            <h3 className="font-display font-semibold text-text-white mb-5 text-sm uppercase tracking-wider">Company</h3>
+            <p className="font-display font-semibold text-text-white mb-5 text-sm uppercase tracking-wider">Company</p>
             <ul className="flex flex-col gap-3">
               {footerLinks.company.map((link) => (
                 <li key={link.href}>
@@ -139,32 +183,48 @@ export default function Footer() {
 
           {/* Newsletter */}
           <div>
-            <h3 className="font-display font-semibold text-text-white mb-5 text-sm uppercase tracking-wider">Newsletter</h3>
+            <p className="font-display font-semibold text-text-white mb-5 text-sm uppercase tracking-wider">Newsletter</p>
             <p className="text-text-gray text-sm mb-4">Get weekly insights on web design, tech, and digital growth.</p>
             <form className="flex flex-col gap-2">
               <input
                 type="email"
                 placeholder="your@email.com"
+                aria-label="Email address for newsletter subscription"
                 className="w-full px-4 py-2.5 bg-background-card border border-border rounded-xl text-text-white text-sm placeholder:text-text-gray/50 focus:outline-none focus:border-primary/50 transition-colors"
               />
               <button
                 type="submit"
+                aria-label="Subscribe to Webotixs weekly newsletter"
                 className="w-full py-2.5 bg-gradient-to-r from-primary-from to-primary-to text-white text-sm font-semibold rounded-xl hover:shadow-glow-sm transition-all"
               >
                 Subscribe
               </button>
             </form>
-            <div className="mt-6">
-              <h4 className="font-semibold text-text-white mb-3 text-sm">Legal</h4>
-              <ul className="flex flex-col gap-2">
-                {footerLinks.legal.map((link) => (
-                  <li key={link.href}>
-                    <Link href={link.href} className="text-text-gray hover:text-primary text-xs transition-colors">
-                      {link.label}
-                    </Link>
-                  </li>
-                ))}
-              </ul>
+            <div className="mt-6 grid grid-cols-2 gap-4">
+              <div>
+                <p className="font-semibold text-text-white mb-3 text-sm">Legal</p>
+                <ul className="flex flex-col gap-2">
+                  {footerLinks.legal.map((link) => (
+                    <li key={link.href}>
+                      <Link href={link.href} className="text-text-gray hover:text-primary text-xs transition-colors">
+                        {link.label}
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+              <div>
+                <p className="font-semibold text-text-white mb-3 text-sm">Locations</p>
+                <ul className="flex flex-col gap-2">
+                  {footerLinks.locations.map((link) => (
+                    <li key={link.href}>
+                      <Link href={link.href} className="text-text-gray hover:text-primary text-xs transition-colors">
+                        {link.label}
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              </div>
             </div>
           </div>
         </div>

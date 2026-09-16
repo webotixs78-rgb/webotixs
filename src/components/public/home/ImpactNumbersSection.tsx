@@ -23,6 +23,8 @@ const defaultStats: StatItem[] = [
 
 const icons = [Trophy, Users, Globe, Eye]
 
+import GlowingGlassCard from '@/components/ui/GlowingGlassCard'
+
 export default function ImpactNumbersSection() {
   const [stats, setStats] = useState<StatItem[]>(defaultStats)
 
@@ -57,7 +59,7 @@ export default function ImpactNumbersSection() {
 
             return (
               <ScrollReveal key={item.id || idx} delay={idx * 0.1}>
-                <div className="glass border border-border/60 rounded-3xl p-8 text-center hover:border-primary/50 hover:shadow-glow-md transition-all duration-300 relative group">
+                <GlowingGlassCard className="glass border border-border/60 rounded-3xl p-8 text-center hover:border-primary/50 hover:shadow-glow-md transition-all duration-300 relative group">
                   <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-blue-600/20 to-cyan-500/20 border border-blue-500/30 flex items-center justify-center text-blue-400 mx-auto mb-5 group-hover:scale-110 transition-transform">
                     <Icon size={24} />
                   </div>
@@ -70,7 +72,7 @@ export default function ImpactNumbersSection() {
                   <p className="text-text-gray text-xs sm:text-sm font-semibold uppercase tracking-wider">
                     {item.label}
                   </p>
-                </div>
+                </GlowingGlassCard>
               </ScrollReveal>
             )
           })}

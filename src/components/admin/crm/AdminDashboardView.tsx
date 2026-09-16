@@ -340,6 +340,7 @@ export function AdminDashboardView({
         <div className="flex items-center gap-2">
           {[
             { id: 'users', label: 'Users & Credentials Manager', icon: Users, count: crmUsers.length },
+            { id: 'inquiries', label: 'Leads & Inquiries', icon: Mail, count: inquiries?.length || 0 },
             { id: 'projects', label: 'Projects Hub', icon: Briefcase, count: projects.length },
             { id: 'kanban', label: 'Kanban Board', icon: FolderKanban, count: tasks.length },
             { id: 'calendar', label: 'Calendar & Deadlines', icon: Clock },
@@ -837,6 +838,126 @@ export function AdminDashboardView({
               </div>
             ))}
           </div>
+        </div>
+      )}
+
+      {/* TAB 10: CRM -> LEADS -> NEW LEADS */}
+      {activeTab === 'inquiries' && (
+        <div className="space-y-6">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 bg-[#0D1224] border border-[#273449] rounded-2xl p-5">
+            <div>
+              <div className="flex items-center gap-2 text-xs text-[#94A3B8] font-semibold mb-1">
+                <span>CRM</span>
+                <span>/</span>
+                <span className="text-blue-400">Leads</span>
+                <span>/</span>
+                <span className="text-white">New Leads</span>
+              </div>
+              <h2 className="font-display text-xl font-bold text-white flex items-center gap-2.5">
+                <span>Project Inquiries & Pipeline Leads</span>
+                <span className="px-2.5 py-0.5 rounded-full text-xs font-extrabold bg-blue-500/20 text-blue-400 border border-blue-500/30">
+                  {inquiries?.length || 0} Total
+                </span>
+              </h2>
+              <p className="text-xs text-[#94A3B8] mt-1">
+                Real-time synchronized leads from Website Contact Form with automatic priority classification and 24-hour response SLAs.
+              </p>
+            </div>
+            <div className="flex items-center gap-3">
+              <span className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs font-bold">
+                <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+                Live Sync Active
+              </span>
+            </div>
+          </div>
+
+          {(!inquiries || inquiries.length === 0) ? (
+            <div className="bg-[#0D1224] border border-[#273449] rounded-3xl p-12 text-center space-y-3">
+              <div className="w-14 h-14 rounded-2xl bg-blue-600/10 border border-blue-500/20 flex items-center justify-center text-blue-400 mx-auto">
+                <Mail size={24} />
+              </div>
+              <h3 className="font-display text-base font-bold text-white">No New Leads Currently</h3>
+              <p className="text-xs text-[#94A3B8] max-w-sm mx-auto">
+                When visitors submit inquiries through the website contact form, they will immediately appear right here with full client details.
+              </p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 gap-4">
+              {inquiries.map((lead: any, index: number) => (
+                <div
+                  key={lead.id || index}
+                  className="bg-[#0D1224] border border-[#273449] hover:border-blue-500/40 rounded-2xl p-6 transition-all space-y-4 shadow-xl"
+                >
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-[#273449] pb-4">
+                    <div className="flex items-center gap-3">
+                      <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-blue-600 to-cyan-500 flex items-center justify-center text-white font-display font-bold text-base shrink-0">
+                        {lead.name ? lead.name[0].toUpperCase() : 'L'}
+                      </div>
+                      <div>
+                        <div className="flex items-center gap-2">
+                          <h3 className="font-display font-bold text-base text-white">{lead.name}</h3>
+                          <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase bg-emerald-500/10 border border-emerald-500/20 text-emerald-400">
+                            {lead.status || 'New Lead'}
+                          </span>
+                          <span className="px-2 py-0.5 rounded-md text-[10px] font-bold uppercase bg-purple-500/10 border border-purple-500/20 text-purple-400">
+                            Priority: {lead.priority || 'Medium'}
+                          </span>
+                        </div>
+                        <div className="flex flex-wrap items-center gap-4 text-xs text-[#94A3B8] mt-1">
+                          <span className="flex items-center gap-1.5 text-blue-400 font-semibold">
+                            <Mail size={13} />
+                            <a href={`mailto:${lead.email}`} className="hover:underline">{lead.email}</a>
+                          </span>
+                          {lead.phone && lead.phone !== 'N/A' && (
+                            <span className="text-white font-medium">📞 {lead.phone}</span>
+                          )}
+                          {lead.company && lead.company !== 'N/A' && (
+                            <span className="text-white font-medium">🏢 {lead.company}</span>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="flex items-center gap-2 self-end sm:self-center">
+                      <span className="text-[11px] font-mono text-[#94A3B8] bg-[#050816] px-3 py-1.5 rounded-xl border border-[#273449]">
+                        📅 {lead.created_at ? new Date(lead.created_at).toLocaleString() : 'Just now'}
+                      </span>
+                      <a
+                        href={`mailto:${lead.email}?subject=Re: Your Project Inquiry — Webotixs`}
+                        className="flex items-center gap-1.5 px-4 py-2 bg-gradient-to-r from-blue-600 to-cyan-500 hover:from-blue-500 hover:to-cyan-400 text-white font-bold text-xs rounded-xl shadow-glow-sm transition-all"
+                      >
+                        <Mail size={14} /> Reply to Client
+                      </a>
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-4 gap-4 bg-[#050816] border border-[#273449] rounded-xl p-4">
+                    <div>
+                      <span className="text-[10px] font-bold text-[#94A3B8] uppercase block mb-0.5">Service Requested</span>
+                      <span className="text-xs font-bold text-cyan-400">{lead.service || 'Web Design & Development'}</span>
+                    </div>
+                    <div>
+                      <span className="text-[10px] font-bold text-[#94A3B8] uppercase block mb-0.5">Assigned To</span>
+                      <span className="text-xs font-semibold text-white">{lead.assigned_to || 'Admin'}</span>
+                    </div>
+                    <div>
+                      <span className="text-[10px] font-bold text-[#94A3B8] uppercase block mb-0.5">Inquiry Source</span>
+                      <span className="text-xs font-semibold text-purple-400">{lead.source || lead.inquiry_source || 'Website Contact Form'}</span>
+                    </div>
+                    <div>
+                      <span className="text-[10px] font-bold text-[#94A3B8] uppercase block mb-0.5">Client Country / IP</span>
+                      <span className="text-xs font-semibold text-emerald-400">{lead.country || 'Global'} {lead.ip_address ? `(${lead.ip_address})` : ''}</span>
+                    </div>
+                  </div>
+
+                  <div className="bg-[#050816]/60 border border-[#273449]/80 rounded-xl p-4">
+                    <span className="text-[10px] font-bold text-[#94A3B8] uppercase block mb-1.5">Project Brief & Requirements</span>
+                    <p className="text-sm text-[#F8FAFC] leading-relaxed whitespace-pre-wrap">{lead.message}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       )}
 

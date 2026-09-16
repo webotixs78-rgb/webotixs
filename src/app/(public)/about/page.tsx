@@ -31,7 +31,7 @@ const values = [
 ]
 
 const milestones = [
-  { year: '2018', title: 'Agency Founded', description: 'Webotixs opened its doors in Dubai with a core team of three innovators.' },
+  { year: '2018', title: 'Agency Founded', description: 'Webotixs opened its doors in Lahore, Pakistan with a core team of three innovators.' },
   { year: '2020', title: 'Global Scaling', description: 'Expanded remote operations globally, serving clients across North America, Europe, and the Middle East.' },
   { year: '2022', title: '50+ Team Milestone', description: 'Grew our core staff to 50+ designers, full-stack engineers, and marketing experts.' },
   { year: '2024', title: 'Enterprise Partnerships', description: 'Established strategic partnerships with Fortune 500 brands and high-growth fintech platforms.' },

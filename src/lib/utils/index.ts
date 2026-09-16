@@ -6,19 +6,33 @@ export function cn(...inputs: ClassValue[]) {
 }
 
 export function formatDate(dateString: string): string {
-  return new Intl.DateTimeFormat('en-US', {
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric',
-  }).format(new Date(dateString))
+  try {
+    if (!dateString) return 'Recently'
+    const date = new Date(dateString)
+    if (isNaN(date.getTime())) return 'Recently'
+    return new Intl.DateTimeFormat('en-US', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+    }).format(date)
+  } catch {
+    return 'Recently'
+  }
 }
 
 export function formatDateShort(dateString: string): string {
-  return new Intl.DateTimeFormat('en-US', {
-    year: 'numeric',
-    month: 'short',
-    day: 'numeric',
-  }).format(new Date(dateString))
+  try {
+    if (!dateString) return 'Recent'
+    const date = new Date(dateString)
+    if (isNaN(date.getTime())) return 'Recent'
+    return new Intl.DateTimeFormat('en-US', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric',
+    }).format(date)
+  } catch {
+    return 'Recent'
+  }
 }
 
 export function slugify(text: string): string {

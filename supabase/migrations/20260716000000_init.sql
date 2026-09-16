@@ -204,6 +204,23 @@ create table public.testimonials (
 );
 
 -- 12. CRM Leads & Form Submissions
+create table public.contact_inquiries (
+    id uuid default uuid_generate_v4() primary key,
+    name varchar(255) not null,
+    email varchar(255) not null,
+    phone varchar(50),
+    service varchar(100),
+    message text not null,
+    inquiry_source varchar(100) default 'Website Contact Form',
+    status varchar(50) default 'New',
+    created_at timestamp with time zone default timezone('utc'::text, now()) not null,
+    ip_address varchar(100),
+    browser text,
+    country varchar(100)
+);
+
+alter table public.contact_inquiries enable row level security;
+
 create table public.contact_submissions (
     id uuid default uuid_generate_v4() primary key,
     name varchar(255) not null,
@@ -329,6 +346,14 @@ create policy "Allow admins to modify admin_users"
     using (auth.role() = 'authenticated');
 
 -- Contact Submissions Policies
+create policy "Allow public to insert contact_inquiries"
+    on public.contact_inquiries for insert
+    with check (true);
+
+create policy "Allow authenticated to manage contact_inquiries"
+    on public.contact_inquiries for all
+    using (auth.role() = 'authenticated');
+
 create policy "Allow public to insert contact_submissions"
     on public.contact_submissions for insert
     with check (true);

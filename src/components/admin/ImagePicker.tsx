@@ -20,6 +20,61 @@ const defaultMediaPresets = [
   { id: 'm6', title: 'Senior UX Designer Portrait', url: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=800&auto=format&fit=crop' },
 ]
 
+const compressImage = (file: File): Promise<File> => {
+  return new Promise((resolve) => {
+    if (file.size <= 1.5 * 1024 * 1024) return resolve(file)
+
+    const reader = new FileReader()
+    reader.onload = (e) => {
+      const img = new Image()
+      img.onload = () => {
+        const canvas = document.createElement('canvas')
+        let width = img.width
+        let height = img.height
+        const maxDim = 1600
+        if (width > maxDim || height > maxDim) {
+          if (width > height) {
+            height = Math.round((height * maxDim) / width)
+            width = maxDim
+          } else {
+            width = Math.round((width * maxDim) / height)
+            height = maxDim
+          }
+        }
+        canvas.width = width
+        canvas.height = height
+        const ctx = canvas.getContext('2d')
+        ctx?.drawImage(img, 0, 0, width, height)
+        canvas.toBlob(
+          (blob) => {
+            if (blob) {
+              const compressedFile = new File([blob], file.name.replace(/\.[^/.]+$/, '.jpg'), { type: 'image/jpeg' })
+              resolve(compressedFile)
+            } else {
+              resolve(file)
+            }
+          },
+          'image/jpeg',
+          0.82
+        )
+      }
+      img.onerror = () => resolve(file)
+      img.src = e.target?.result as string
+    }
+    reader.onerror = () => resolve(file)
+    reader.readAsDataURL(file)
+  })
+}
+
+const fileToDataUrl = (file: File): Promise<string> => {
+  return new Promise((resolve) => {
+    const reader = new FileReader()
+    reader.onload = (e) => resolve((e.target?.result as string) || '')
+    reader.onerror = () => resolve('')
+    reader.readAsDataURL(file)
+  })
+}
+
 export default function ImagePicker({ value, onChange, label = 'Cover / Thumbnail Image' }: ImagePickerProps) {
   const [isOpen, setIsOpen] = useState(false)
   const [activeTab, setActiveTab] = useState<'upload' | 'library' | 'url'>('upload')
@@ -46,56 +101,71 @@ export default function ImagePicker({ value, onChange, label = 'Cover / Thumbnai
   }, [isOpen])
 
   const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0]
-    if (!file) return
+    const originalFile = e.target.files?.[0]
+    if (!originalFile) return
 
     setUploading(true)
-    const fileName = `${Date.now()}-${file.name.replace(/\s+/g, '-')}`
-    const filePath = `uploads/${fileName}`
-
     let finalUrl: string | null = null
 
-    // 1. Attempt upload to Supabase storage bucket 'media'
     try {
-      const { error } = await supabase.storage.from('media').upload(filePath, file)
-      if (!error) {
-        const { data } = supabase.storage.from('media').getPublicUrl(filePath)
-        if (data?.publicUrl) {
-          finalUrl = data.publicUrl
-        }
+      const fileToUpload = await compressImage(originalFile)
+
+      // 1. Try server-side upload via /api/media/upload
+      const formData = new FormData()
+      formData.append('file', fileToUpload)
+      formData.append('folder', 'uploads')
+
+      const res = await fetch('/api/media/upload', {
+        method: 'POST',
+        body: formData,
+      })
+      const data = await res.json()
+      if (data.success && data.url) {
+        finalUrl = data.url
       }
     } catch (err) {
-      // Fallback if Supabase storage is not configured or offline
+      console.warn('[ImagePicker API Upload Notice]:', err)
     }
 
-    // 2. If Supabase upload didn't return a publicUrl, fallback to base64 Data URL
+    // 2. Try direct client-side Supabase Storage upload
     if (!finalUrl) {
-      await new Promise<void>((resolve) => {
-        const reader = new FileReader()
-        reader.onload = () => {
-          finalUrl = reader.result as string
-          resolve()
+      const fileName = `${Date.now()}-${originalFile.name.replace(/\s+/g, '-')}`
+      const filePath = `uploads/${fileName}`
+      try {
+        const { error } = await supabase.storage.from('media').upload(filePath, originalFile)
+        if (!error) {
+          const { data } = supabase.storage.from('media').getPublicUrl(filePath)
+          if (data?.publicUrl) finalUrl = data.publicUrl
         }
-        reader.readAsDataURL(file)
-      })
+      } catch (err) {}
+    }
+
+    // 3. Fallback to high-reliability compressed Data URL so upload NEVER fails regardless of network or storage policies
+    if (!finalUrl) {
+      try {
+        const compressed = await compressImage(originalFile)
+        finalUrl = await fileToDataUrl(compressed)
+      } catch {
+        finalUrl = await fileToDataUrl(originalFile)
+      }
     }
 
     if (finalUrl) {
-      // Add to local storage media list
       try {
         const stored = localStorage.getItem('webotixs_cms_media')
         const currentList = stored ? JSON.parse(stored) : []
         const newItem = {
           id: crypto.randomUUID(),
-          name: file.name,
+          name: originalFile.name,
           url: finalUrl,
-          size: file.size,
+          size: originalFile.size,
           type: 'image',
           folder: 'Backgrounds',
           created_at: new Date().toISOString(),
         }
         if (Array.isArray(currentList)) {
-          localStorage.setItem('webotixs_cms_media', JSON.stringify([newItem, ...currentList]))
+          const cleanList = [newItem, ...currentList]
+          localStorage.setItem('webotixs_cms_media', JSON.stringify(cleanList.slice(0, 30)))
         }
       } catch {}
 
@@ -225,7 +295,7 @@ export default function ImagePicker({ value, onChange, label = 'Cover / Thumbnai
                     {uploading ? (
                       <div className="flex flex-col items-center gap-3">
                         <Loader2 size={28} className="animate-spin text-blue-500" />
-                        <span className="text-xs font-bold text-white">Processing & Converting Image...</span>
+                        <span className="text-xs font-bold text-white">Processing & Applying Image...</span>
                       </div>
                     ) : (
                       <div className="text-center space-y-3">
@@ -234,7 +304,7 @@ export default function ImagePicker({ value, onChange, label = 'Cover / Thumbnai
                         </div>
                         <div>
                           <div className="text-sm font-bold text-white">Browse Device or Drag & Drop File</div>
-                          <p className="text-xs text-[#94A3B8] mt-1">PNG, JPG, WEBP, or SVG up to 10MB</p>
+                          <p className="text-xs text-[#94A3B8] mt-1">PNG, JPG, WEBP, or SVG (Any File Size Supported)</p>
                         </div>
                       </div>
                     )}

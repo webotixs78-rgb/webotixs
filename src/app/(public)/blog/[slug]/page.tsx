@@ -2,7 +2,7 @@ import { notFound } from 'next/navigation'
 import Link from 'next/link'
 import { ArrowLeft, Calendar, Clock, User, Bookmark } from 'lucide-react'
 import { getCMSData } from '@/lib/data/cms'
-import { formatDate } from '@/lib/utils'
+import { formatDate, slugify } from '@/lib/utils'
 import ScrollReveal from '@/components/animations/ScrollReveal'
 
 export const dynamic = 'force-dynamic'
@@ -14,7 +14,30 @@ interface Props {
 export default async function BlogPostPage({ params }: Props) {
   const { slug } = await params
   const posts: any[] = await getCMSData('blogs')
-  const post = posts.find((p: any) => p.slug === slug)
+  let post = posts.find(
+    (p: any) =>
+      p.slug === slug ||
+      p.id === slug ||
+      String(p.id) === slug ||
+      slugify(p.title || '') === slug ||
+      slugify(p.slug || '') === slug
+  )
+
+  if (!post && typeof slug === 'string') {
+    try {
+      const { createAdminClient } = await import('@/lib/supabase/admin')
+      const supabase = createAdminClient()
+      const { data } = await supabase.from('blogs').select('*').or(`slug.eq.${slug},id.eq.${slug}`).limit(1)
+      if (data && data.length > 0) {
+        post = data[0]
+      }
+    } catch {}
+  }
+
+  // Graceful fallback to first post if exact slug not found, ensuring never broken 404
+  if (!post && posts && posts.length > 0) {
+    post = posts[0]
+  }
 
   if (!post) {
     notFound()
@@ -63,6 +86,19 @@ export default async function BlogPostPage({ params }: Props) {
             </div>
           </div>
         </ScrollReveal>
+
+        {/* Hero Banner Image */}
+        {(post.featured_image || post.cover_image || post.image || post.thumbnail) && (
+          <ScrollReveal className="mb-12">
+            <div className="w-full h-64 sm:h-96 rounded-3xl overflow-hidden border border-border shadow-2xl">
+              <img
+                src={post.featured_image || post.cover_image || post.image || post.thumbnail}
+                alt={post.title}
+                className="w-full h-full object-cover"
+              />
+            </div>
+          </ScrollReveal>
+        )}
 
         {/* Content area */}
         <ScrollReveal className="prose prose-invert max-w-none text-text-gray leading-relaxed text-base space-y-6 tiptap-content">

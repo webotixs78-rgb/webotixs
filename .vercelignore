@@ -1,0 +1,8 @@
+node_modules
+.next
+.git
+.ds_store
+*.log
+**/*.mp4
+public/videos
+**/videos/**

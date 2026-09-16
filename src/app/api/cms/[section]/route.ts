@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server'
 import { revalidatePath } from 'next/cache'
-import { createClient } from '@/lib/supabase/client'
+import { createAdminClient } from '@/lib/supabase/admin'
 import {
   mockBlogPosts,
   mockPortfolio,
@@ -11,7 +11,6 @@ import {
 } from '@/lib/data/mock'
 
 // Global server-side cache so changes persist immediately across all pages/devices
-// even if Supabase table creation SQL has not been executed yet.
 const globalStore: Record<string, any> = globalThis as any
 if (!globalStore.__webotixs_cms_store) {
   globalStore.__webotixs_cms_store = {
@@ -21,6 +20,7 @@ if (!globalStore.__webotixs_cms_store) {
     testimonials: [...mockTestimonials],
     team: [...mockTeam],
     industries: [...mockIndustries],
+    media: [],
     homepage: {
       hero: {
         badge: 'Trusted by 200+ Global Clients',
@@ -54,16 +54,8 @@ if (!globalStore.__webotixs_cms_store) {
 
 const store = globalStore.__webotixs_cms_store
 
-// Map section slug to Supabase table name
-const tableMap: Record<string, string> = {
-  blogs: 'blogs',
-  portfolio: 'portfolio',
-  services: 'services',
-  testimonials: 'testimonials',
-  team: 'team',
-  industries: 'industries',
-  homepage: 'homepage_sections',
-}
+export const dynamic = 'force-dynamic'
+export const revalidate = 0
 
 export async function GET(
   request: Request,
@@ -72,33 +64,18 @@ export async function GET(
   const { section } = await params
 
   try {
-    const supabase = createClient()
-    const tableName = tableMap[section]
-
-    if (tableName) {
-      if (section === 'homepage') {
-        const { data, error } = await supabase
-          .from('homepage_sections')
-          .select('content')
-          .eq('id', 'main')
-          .single()
-        if (data?.content && !error) {
-          store[section] = data.content
-          return NextResponse.json({ success: true, data: data.content, source: 'supabase' })
-        }
-      } else {
-        const { data, error } = await supabase
-          .from(tableName)
-          .select('*')
-          .order('created_at', { ascending: false })
-        if (data && data.length > 0 && !error) {
-          store[section] = data
-          return NextResponse.json({ success: true, data, source: 'supabase' })
-        }
+    const supabase = createAdminClient()
+    const { data: fileData } = await supabase.storage.from('webotixs_cms_data').download(`${section}.json`)
+    if (fileData) {
+      const text = await fileData.text()
+      const json = JSON.parse(text)
+      if (json && (Array.isArray(json) ? json.length > 0 : Object.keys(json).length > 0)) {
+        store[section] = json
+        return NextResponse.json({ success: true, data: json, source: 'supabase_storage' })
       }
     }
   } catch (e) {
-    // Supabase offline or tables not created yet -> fallback cleanly to live store
+    // Supabase offline -> fallback cleanly to in-memory store
   }
 
   const data = store[section] || []
@@ -117,7 +94,21 @@ export async function POST(
     return NextResponse.json({ success: false, error: 'Invalid JSON' }, { status: 400 })
   }
 
-  // Update in-memory server cache immediately
+  // CRITICAL FIX: Download latest existing section state from Supabase Storage first
+  // to ensure cold-started serverless instances never wipe existing images or user edits!
+  try {
+    const supabase = createAdminClient()
+    const { data: fileData } = await supabase.storage.from('webotixs_cms_data').download(`${section}.json`)
+    if (fileData) {
+      const text = await fileData.text()
+      const json = JSON.parse(text)
+      if (json && (Array.isArray(json) ? json.length > 0 : Object.keys(json).length > 0)) {
+        store[section] = json
+      }
+    }
+  } catch (e) {}
+
+  // Update in-memory server cache safely
   if (body.data !== undefined) {
     store[section] = body.data
   } else if (body.item) {
@@ -131,31 +122,19 @@ export async function POST(
     store[section] = current
   }
 
-  // Attempt to save to Supabase
+  // Save merged state to Supabase Storage bucket for permanent cloud persistence
   try {
-    const supabase = createClient()
-    const tableName = tableMap[section]
-    if (tableName) {
-      if (section === 'homepage') {
-        await supabase.from('homepage_sections').upsert({
-          id: 'main',
-          content: store[section],
-          updated_at: new Date().toISOString(),
-        })
-      } else if (body.item) {
-        await supabase.from(tableName).upsert({
-          ...body.item,
-          updated_at: new Date().toISOString(),
-        })
-      } else if (Array.isArray(store[section])) {
-        await supabase.from(tableName).upsert(store[section])
-      }
-    }
+    const supabase = createAdminClient()
+    const buffer = Buffer.from(JSON.stringify(store[section], null, 2))
+    await supabase.storage.from('webotixs_cms_data').upload(`${section}.json`, buffer, {
+      contentType: 'application/json',
+      upsert: true,
+    })
   } catch (e) {
-    // Ignore Supabase table errors if migration not run
+    console.error('[CMS Save Error]:', e)
   }
 
-  // Immediately flush Next.js server cache across all public pages!
+  // Immediately revalidate Next.js server cache across all public and admin pages
   try {
     revalidatePath('/')
     revalidatePath('/blog')
@@ -163,6 +142,10 @@ export async function POST(
     revalidatePath('/services')
     revalidatePath('/industries')
     revalidatePath('/team')
+    revalidatePath('/admin/services')
+    revalidatePath('/admin/blogs')
+    revalidatePath('/admin/portfolio')
+    revalidatePath('/admin/media')
   } catch (e) {}
 
   return NextResponse.json({ success: true, data: store[section] })
@@ -180,15 +163,29 @@ export async function DELETE(
     return NextResponse.json({ success: false, error: 'Invalid ID or section' }, { status: 400 })
   }
 
+  // Fetch latest state first before deleting
+  try {
+    const supabase = createAdminClient()
+    const { data: fileData } = await supabase.storage.from('webotixs_cms_data').download(`${section}.json`)
+    if (fileData) {
+      const text = await fileData.text()
+      const json = JSON.parse(text)
+      if (json && Array.isArray(json)) {
+        store[section] = json
+      }
+    }
+  } catch (e) {}
+
   store[section] = store[section].filter((item: any) => item.id !== id)
 
-  // Attempt delete in Supabase
+  // Update in Supabase Storage
   try {
-    const supabase = createClient()
-    const tableName = tableMap[section]
-    if (tableName) {
-      await supabase.from(tableName).delete().eq('id', id)
-    }
+    const supabase = createAdminClient()
+    const buffer = Buffer.from(JSON.stringify(store[section], null, 2))
+    await supabase.storage.from('webotixs_cms_data').upload(`${section}.json`, buffer, {
+      contentType: 'application/json',
+      upsert: true,
+    })
   } catch (e) {}
 
   try {

@@ -36,6 +36,11 @@ export const metadata: Metadata = {
   authors: [{ name: 'Webotixs' }],
   creator: 'Webotixs',
   metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || 'https://webotixs.com'),
+  icons: {
+    icon: '/icon?v=2',
+    shortcut: '/icon?v=2',
+    apple: '/apple-icon?v=2',
+  },
   openGraph: {
     type: 'website',
     locale: 'en_US',

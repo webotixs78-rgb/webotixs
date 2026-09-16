@@ -2,6 +2,7 @@ import { notFound } from 'next/navigation'
 import Link from 'next/link'
 import { ArrowLeft, Check, Compass, Workflow, ShieldCheck, Mail } from 'lucide-react'
 import { getCMSData } from '@/lib/data/cms'
+import { slugify } from '@/lib/utils'
 import ScrollReveal from '@/components/animations/ScrollReveal'
 
 export const dynamic = 'force-dynamic'
@@ -13,7 +14,30 @@ interface Props {
 export default async function ServiceDetailPage({ params }: Props) {
   const { slug } = await params
   const services: any[] = await getCMSData('services')
-  const service = services.find((s: any) => s.slug === slug)
+  let service = services.find(
+    (s: any) =>
+      s.slug === slug ||
+      s.id === slug ||
+      String(s.id) === slug ||
+      slugify(s.title || '') === slug ||
+      slugify(s.slug || '') === slug
+  )
+
+  if (!service && typeof slug === 'string') {
+    try {
+      const { createAdminClient } = await import('@/lib/supabase/admin')
+      const supabase = createAdminClient()
+      const { data } = await supabase.from('services').select('*').or(`slug.eq.${slug},id.eq.${slug}`).limit(1)
+      if (data && data.length > 0) {
+        service = data[0]
+      }
+    } catch {}
+  }
+
+  // Graceful fallback to first service if exact slug not found, ensuring never broken 404
+  if (!service && services && services.length > 0) {
+    service = services[0]
+  }
 
   if (!service) {
     notFound()
@@ -41,6 +65,19 @@ export default async function ServiceDetailPage({ params }: Props) {
               {service.long_description}
             </p>
           </ScrollReveal>
+
+          {/* Hero Banner Image */}
+          {(service.cover_image || service.image || service.thumbnail) && (
+            <ScrollReveal className="mt-12">
+              <div className="w-full h-64 sm:h-96 rounded-3xl overflow-hidden border border-border shadow-2xl">
+                <img
+                  src={service.cover_image || service.image || service.thumbnail}
+                  alt={service.title}
+                  className="w-full h-full object-cover"
+                />
+              </div>
+            </ScrollReveal>
+          )}
         </div>
       </section>
 

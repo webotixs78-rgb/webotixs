@@ -12,7 +12,8 @@ const defaultHero = {
   titlePrefix: 'We Build',
   titleHighlight: 'Digital',
   titleSuffix: 'Experiences',
-  subtitle: 'Premium web design, mobile apps, and brand identities crafted for ambitious businesses. We turn your vision into stunning digital products.',
+  subtitle:
+    'We build digital experiences that drive measurable business growth — combining bespoke web design, custom mobile engineering, and brand strategy. We partner with ambitious leaders to turn their vision into high-performance digital products and unforgettable user experiences.',
   primaryCtaText: 'Start Your Project',
   primaryCtaLink: '/contact',
   secondaryCtaText: 'View Our Work',
@@ -116,16 +117,18 @@ export default function HeroSection() {
           >
             <Link
               href={hero.primaryCtaLink || '/contact'}
-              className="group flex items-center gap-2 px-8 py-4 bg-gradient-to-r from-primary-from to-primary-to text-white font-semibold rounded-2xl shadow-glow-sm hover:shadow-glow-md transition-all duration-300 hover:scale-105"
+              aria-label="Start Your Web Design and Development Project"
+              className="btn-float-rtl group flex items-center gap-2 px-8 py-4 bg-gradient-to-r from-primary-from to-primary-to text-white font-bold text-base rounded-2xl shadow-glow-sm"
             >
               {hero.primaryCtaText}
-              <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
+              <ArrowRight size={18} className="group-hover:translate-x-1.5 transition-transform duration-300" />
             </Link>
             <Link
               href={hero.secondaryCtaLink || '/portfolio'}
-              className="group flex items-center gap-3 px-8 py-4 glass border border-border rounded-2xl text-text-white font-semibold hover:border-primary/50 hover:text-primary transition-all duration-300"
+              aria-label="View Webotixs Client Portfolio Work"
+              className="btn-float-rtl-glass group flex items-center gap-3 px-8 py-4 glass border border-border rounded-2xl text-text-white font-bold text-base"
             >
-              <span className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">
+              <span className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
                 <Play size={14} className="text-primary ml-0.5" />
               </span>
               {hero.secondaryCtaText}

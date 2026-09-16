@@ -32,8 +32,42 @@ export default function ContactPage() {
   const onSubmit = async (data: ContactFormData) => {
     setIsSubmitting(true)
     try {
-      // Send data to API in future phases
-      await new Promise((resolve) => setTimeout(resolve, 1500))
+      const res = await fetch('/api/contact', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data),
+      })
+      const json = await res.json()
+      console.log('[Contact Submission Status]:', json.emailsSent, json.diagnostics)
+      if (!res.ok) {
+        throw new Error(json.error || 'Failed to send message')
+      }
+
+      if (json.lead || json.inquiry) {
+        try {
+          const leads = JSON.parse(localStorage.getItem('webotixs_crm_leads') || '[]')
+          if (Array.isArray(leads)) {
+            leads.unshift(json.lead || json.inquiry)
+            localStorage.setItem('webotixs_crm_leads', JSON.stringify(leads))
+          }
+          const inquiries = JSON.parse(localStorage.getItem('webotixs_contact_inquiries') || '[]')
+          if (Array.isArray(inquiries)) {
+            inquiries.unshift(json.inquiry || json.lead)
+            localStorage.setItem('webotixs_contact_inquiries', JSON.stringify(inquiries))
+          }
+        } catch {}
+      }
+      if (json.notification) {
+        try {
+          const notifs = JSON.parse(localStorage.getItem('webotixs_crm_notifications') || '[]')
+          if (Array.isArray(notifs)) {
+            notifs.unshift(json.notification)
+            localStorage.setItem('webotixs_crm_notifications', JSON.stringify(notifs))
+          }
+        } catch {}
+      }
+      window.dispatchEvent(new Event('storage'))
+
       setSubmitSuccess(true)
       reset()
     } catch (e) {
@@ -67,39 +101,44 @@ export default function ContactPage() {
               <ScrollReveal className="space-y-6">
                 {/* Mail */}
                 <div className="flex items-start gap-4">
-                  <div className="w-11 h-11 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-center text-primary">
+                  <div className="w-11 h-11 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-center text-primary flex-shrink-0">
                     <Mail size={16} />
                   </div>
                   <div>
                     <h3 className="text-xs uppercase text-text-gray font-bold tracking-wider mb-1">Email Us</h3>
-                    <a href="mailto:hello@webotixs.com" className="text-text-white hover:text-primary transition-colors text-sm font-semibold">
-                      hello@webotixs.com
+                    <a href="mailto:info@webotixs.com" className="text-text-white hover:text-primary transition-colors text-sm font-semibold">
+                      info@webotixs.com
                     </a>
                   </div>
                 </div>
 
                 {/* Phone */}
                 <div className="flex items-start gap-4">
-                  <div className="w-11 h-11 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-center text-primary">
+                  <div className="w-11 h-11 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-center text-primary flex-shrink-0">
                     <Phone size={16} />
                   </div>
                   <div>
                     <h3 className="text-xs uppercase text-text-gray font-bold tracking-wider mb-1">Call Us</h3>
-                    <a href="tel:+1234567890" className="text-text-white hover:text-primary transition-colors text-sm font-semibold">
-                      +1 (234) 567-890
-                    </a>
+                    <div className="space-y-1">
+                      <a href="tel:+12089055973" className="block text-text-white hover:text-primary transition-colors text-sm font-semibold">
+                        +1 (208) 905-5973
+                      </a>
+                      <a href="tel:+923092715559" className="block text-text-white hover:text-primary transition-colors text-sm font-semibold">
+                        +92 309 2715559
+                      </a>
+                    </div>
                   </div>
                 </div>
 
                 {/* Map */}
                 <div className="flex items-start gap-4">
-                  <div className="w-11 h-11 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-center text-primary">
+                  <div className="w-11 h-11 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-center text-primary flex-shrink-0">
                     <MapPin size={16} />
                   </div>
                   <div>
                     <h3 className="text-xs uppercase text-text-gray font-bold tracking-wider mb-1">Office Location</h3>
-                    <span className="text-text-white text-sm font-semibold">
-                      Dubai, UAE &middot; Remote Worldwide
+                    <span className="text-text-white text-sm font-semibold leading-relaxed block">
+                      Mz floor, Al-Qadir Heights, Kalma Chowk Flyover، Babar Block Garden Town, Lahore, 54000, Pakistan
                     </span>
                   </div>
                 </div>
@@ -116,7 +155,7 @@ export default function ContactPage() {
                     </div>
                     <h2 className="font-display text-2xl font-bold text-text-white">Message Sent Successfully!</h2>
                     <p className="text-text-gray text-sm max-w-sm mx-auto">
-                      Thank you for contacting Webotixs. Our team will classify your lead and reach out back shortly.
+                      Thank You! Your project inquiry has been submitted successfully. A confirmation email has been sent to your inbox. Our team will review your requirements and contact you within 24 business hours.
                     </p>
                     <button
                       onClick={() => setSubmitSuccess(false)}

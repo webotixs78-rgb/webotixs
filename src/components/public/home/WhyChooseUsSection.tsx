@@ -39,6 +39,8 @@ const defaultReasons = [
   },
 ]
 
+import GlowingGlassCard from '@/components/ui/GlowingGlassCard'
+
 export default function WhyChooseUsSection() {
   const [reasons, setReasons] = useState<any[]>(defaultReasons)
 
@@ -68,7 +70,7 @@ export default function WhyChooseUsSection() {
             <span className="text-text-gray text-xs font-semibold uppercase tracking-wider">The Webotixs Advantage</span>
           </div>
           <h2 className="font-display text-3xl sm:text-4xl md:text-5xl font-bold text-text-white mb-5">
-            Why Enterprise Leaders <span className="gradient-text">Choose Webotixs</span>
+            Why Enterprise Leaders Partner with Us to <span className="gradient-text">Build Digital Experiences</span>
           </h2>
           <p className="text-text-gray text-base sm:text-lg leading-relaxed">
             We don’t just build websites — we architect high-performance digital engines engineered to dominate your industry and scale without friction.
@@ -81,14 +83,14 @@ export default function WhyChooseUsSection() {
             const Icon = item.icon || Cpu
             return (
               <ScrollReveal key={item.title || idx} delay={idx * 0.1}>
-                <div className="group h-full glass border border-border/60 rounded-3xl p-8 hover:border-primary/50 hover:shadow-glow-sm transition-all duration-300 flex flex-col justify-between">
+                <GlowingGlassCard className="group h-full glass border border-border/60 rounded-3xl p-8 hover:border-primary/50 hover:shadow-glow-sm transition-all duration-300 flex flex-col justify-between">
                   <div>
                     <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-primary-from/20 to-primary-to/20 border border-primary/30 flex items-center justify-center text-primary mb-6 group-hover:scale-110 group-hover:shadow-glow-sm transition-all">
                       <Icon size={26} />
                     </div>
-                    <h3 className="font-display text-xl font-bold text-text-white mb-3 group-hover:text-primary transition-colors">
+                    <div className="font-display text-xl font-bold text-text-white mb-3 group-hover:text-primary transition-colors">
                       {item.title}
-                    </h3>
+                    </div>
                     <p className="text-text-gray text-sm leading-relaxed mb-6">
                       {item.description}
                     </p>
@@ -98,7 +100,7 @@ export default function WhyChooseUsSection() {
                     <CheckCircle2 size={14} className="text-cyan-400" />
                     <span>Enterprise Verified Standard</span>
                   </div>
-                </div>
+                </GlowingGlassCard>
               </ScrollReveal>
             )
           })}

@@ -6,6 +6,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { contactSchema, type ContactFormData } from '@/lib/validations/contact'
 import ScrollReveal from '@/components/animations/ScrollReveal'
 import { Send, CheckCircle2, Loader2, Sparkles, Mail, Phone, MessageSquare } from 'lucide-react'
+import GlowingGlassCard from '@/components/ui/GlowingGlassCard'
 
 export default function ContactSection() {
   const [isSubmitting, setIsSubmitting] = useState(false)
@@ -40,13 +41,40 @@ export default function ContactSection() {
       })
 
       const json = await res.json()
+      console.log('[Contact Submission Status]:', json.emailsSent, json.diagnostics)
       if (!res.ok) {
         throw new Error(json.error || 'Failed to submit inquiry')
       }
 
+      if (json.lead || json.inquiry) {
+        try {
+          const leads = JSON.parse(localStorage.getItem('webotixs_crm_leads') || '[]')
+          if (Array.isArray(leads)) {
+            leads.unshift(json.lead || json.inquiry)
+            localStorage.setItem('webotixs_crm_leads', JSON.stringify(leads))
+          }
+          const inquiries = JSON.parse(localStorage.getItem('webotixs_contact_inquiries') || '[]')
+          if (Array.isArray(inquiries)) {
+            inquiries.unshift(json.inquiry || json.lead)
+            localStorage.setItem('webotixs_contact_inquiries', JSON.stringify(inquiries))
+          }
+        } catch {}
+      }
+
+      if (json.notification) {
+        try {
+          const notifs = JSON.parse(localStorage.getItem('webotixs_crm_notifications') || '[]')
+          if (Array.isArray(notifs)) {
+            notifs.unshift(json.notification)
+            localStorage.setItem('webotixs_crm_notifications', JSON.stringify(notifs))
+          }
+        } catch {}
+      }
+      window.dispatchEvent(new Event('storage'))
+
       setSuccess(true)
       reset()
-      setTimeout(() => setSuccess(false), 6000)
+      setTimeout(() => setSuccess(false), 8000)
     } catch (err: any) {
       setErrorMsg(err.message || 'An unexpected error occurred. Please try again.')
     } finally {
@@ -75,9 +103,9 @@ export default function ContactSection() {
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-start">
           {/* Left Info Panel */}
-          <div className="lg:col-span-5 glass border border-border/60 rounded-3xl p-8 sm:p-10 space-y-8">
+          <GlowingGlassCard className="lg:col-span-5 glass border border-border/60 rounded-3xl p-8 sm:p-10 space-y-8">
             <div>
-              <h3 className="font-display text-2xl font-bold text-white mb-3">Get in Touch Directly</h3>
+              <div className="font-display text-2xl font-bold text-white mb-3">Get in Touch Directly</div>
               <p className="text-text-gray text-sm leading-relaxed">
                 Our global project managers are ready to review your requirements and provide a detailed technical roadmap within 24 hours.
               </p>
@@ -85,26 +113,31 @@ export default function ContactSection() {
 
             <div className="space-y-5 pt-4 border-t border-border/40">
               <div className="flex items-center gap-4">
-                <div className="w-12 h-12 rounded-2xl bg-blue-600/15 border border-blue-500/30 flex items-center justify-center text-blue-400">
+                <div className="w-12 h-12 rounded-2xl bg-blue-600/15 border border-blue-500/30 flex items-center justify-center text-blue-400 flex-shrink-0">
                   <Mail size={20} />
                 </div>
                 <div>
                   <div className="text-xs text-text-gray uppercase font-bold">General & New Business</div>
-                  <a href="mailto:hello@webotixs.com" className="text-sm font-semibold text-white hover:text-primary transition-colors">
-                    hello@webotixs.com
+                  <a href="mailto:info@webotixs.com" aria-label="Send email to Webotixs business team" className="text-sm font-semibold text-white hover:text-primary transition-colors">
+                    info@webotixs.com
                   </a>
                 </div>
               </div>
 
               <div className="flex items-center gap-4">
-                <div className="w-12 h-12 rounded-2xl bg-cyan-500/15 border border-cyan-500/30 flex items-center justify-center text-cyan-400">
+                <div className="w-12 h-12 rounded-2xl bg-cyan-500/15 border border-cyan-500/30 flex items-center justify-center text-cyan-400 flex-shrink-0">
                   <Phone size={20} />
                 </div>
                 <div>
                   <div className="text-xs text-text-gray uppercase font-bold">Direct Phone / WhatsApp</div>
-                  <a href="tel:+1234567890" className="text-sm font-semibold text-white hover:text-primary transition-colors">
-                    +1 (234) 567-890
-                  </a>
+                  <div className="space-y-1">
+                    <a href="tel:+12089055973" className="block text-sm font-semibold text-white hover:text-primary transition-colors">
+                      +1 (208) 905-5973
+                    </a>
+                    <a href="tel:+923092715559" className="block text-sm font-semibold text-white hover:text-primary transition-colors">
+                      +92 309 2715559
+                    </a>
+                  </div>
                 </div>
               </div>
 
@@ -118,14 +151,14 @@ export default function ContactSection() {
                 </div>
               </div>
             </div>
-          </div>
+          </GlowingGlassCard>
 
           {/* Right Form Panel */}
-          <div className="lg:col-span-7 glass border border-border/60 rounded-3xl p-8 sm:p-10">
+          <GlowingGlassCard className="lg:col-span-7 glass border border-border/60 rounded-3xl p-8 sm:p-10">
             {success && (
               <div className="mb-6 p-4 bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 rounded-2xl flex items-center gap-3 text-sm font-semibold">
                 <CheckCircle2 size={20} className="flex-shrink-0" />
-                <span>Thank you! Your inquiry has been submitted and classified. Our team will contact you shortly.</span>
+                <span>Thank You! Your project inquiry has been submitted successfully. A confirmation email has been sent to your inbox. Our team will review your requirements and contact you within 24 business hours.</span>
               </div>
             )}
 
@@ -216,7 +249,7 @@ export default function ContactSection() {
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className="w-full py-4 bg-gradient-to-r from-primary-from to-primary-to text-white font-bold rounded-xl hover:shadow-glow-md transition-all flex items-center justify-center gap-2 disabled:opacity-50"
+                className="btn-float-rtl w-full py-4 bg-gradient-to-r from-primary-from to-primary-to text-white font-bold rounded-xl shadow-glow-md flex items-center justify-center gap-2 disabled:opacity-50"
               >
                 {isSubmitting ? (
                   <>
@@ -229,7 +262,7 @@ export default function ContactSection() {
                 )}
               </button>
             </form>
-          </div>
+          </GlowingGlassCard>
         </div>
       </div>
     </section>

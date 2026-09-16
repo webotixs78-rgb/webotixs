@@ -51,15 +51,19 @@ export function AgencyCRMClientHub() {
 
   // Fetch from APIs and sync with localStorage on load
   useEffect(() => {
+    let isMounted = true
+
     async function fetchAllData() {
       setLoading(true)
       try {
-        const [projRes, invRes, tickRes] = await Promise.all([
+        const [projRes, invRes, tickRes, leadsRes] = await Promise.all([
           fetch('/api/crm/projects').catch(() => null),
           fetch('/api/crm/invoices').catch(() => null),
           fetch('/api/crm/tickets').catch(() => null),
+          fetch('/api/crm/leads').catch(() => null),
         ])
 
+        if (!isMounted) return
         let loadedFromApi = false
 
         if (projRes && projRes.ok) {
@@ -67,7 +71,6 @@ export function AgencyCRMClientHub() {
           if (pData.projects && pData.projects.length > 0) {
             setProjects(pData.projects)
             loadedFromApi = true
-            // Flatten tasks if present
             const allFetchedTasks: CRMTaskItem[] = []
             pData.projects.forEach((p: any) => {
               if (p.tasks && p.tasks.length > 0) {
@@ -102,7 +105,31 @@ export function AgencyCRMClientHub() {
           if (tData.tickets && tData.tickets.length > 0) setTickets(tData.tickets)
         }
 
-        // If no data returned from API (empty DB or offline), load from localStorage if available
+        if (leadsRes && leadsRes.ok) {
+          const lData = await leadsRes.json()
+          if (lData.leads && lData.leads.length > 0) {
+            setInquiries(lData.leads)
+          }
+        }
+
+        // Check local storage / fallback
+        const localLeads = localStorage.getItem('webotixs_crm_leads') || localStorage.getItem('webotixs_contact_inquiries')
+        if (localLeads) {
+          try {
+            const parsed = JSON.parse(localLeads)
+            if (Array.isArray(parsed) && parsed.length > 0) {
+              setInquiries((prev) => {
+                const map = new Map()
+                parsed.forEach((item: any) => map.set(item.id, item))
+                prev.forEach((item: any) => {
+                  if (!map.has(item.id)) map.set(item.id, item)
+                })
+                return Array.from(map.values())
+              })
+            }
+          } catch {}
+        }
+
         if (!loadedFromApi) {
           const localProjects = localStorage.getItem('webotixs_crm_projects')
           const localTasks = localStorage.getItem('webotixs_crm_tasks')
@@ -116,16 +143,30 @@ export function AgencyCRMClientHub() {
         }
       } catch (err) {
         console.error('[CRM Data Fetch Fallback]:', err)
-        const localProjects = localStorage.getItem('webotixs_crm_projects')
-        const localTasks = localStorage.getItem('webotixs_crm_tasks')
-        if (localProjects) setProjects(JSON.parse(localProjects))
-        if (localTasks) setTasks(JSON.parse(localTasks))
       } finally {
-        setLoading(false)
+        if (isMounted) setLoading(false)
       }
     }
 
     fetchAllData()
+
+    const handleStorage = () => {
+      try {
+        const localLeads = localStorage.getItem('webotixs_crm_leads') || localStorage.getItem('webotixs_contact_inquiries')
+        if (localLeads) {
+          const parsed = JSON.parse(localLeads)
+          if (Array.isArray(parsed) && parsed.length > 0) {
+            setInquiries(parsed)
+          }
+        }
+      } catch {}
+    }
+
+    window.addEventListener('storage', handleStorage)
+    return () => {
+      isMounted = false
+      window.removeEventListener('storage', handleStorage)
+    }
   }, [])
 
   const handleCreateProject = async (projectData: any) => {
