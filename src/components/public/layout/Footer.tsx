@@ -23,8 +23,8 @@ const footerLinks = {
     { label: 'Cookie Policy', href: '/cookie-policy' },
   ],
   locations: [
-    { label: 'Dallas, TX', href: '/locations/dallas-tx' },
-    { label: 'Las Vegas, NV', href: '/locations/las-vegas-nv' },
+    { label: 'Dallas, TX', href: '/dallas-tx' },
+    { label: 'Las Vegas, NV', href: '/las-vegas-nv' },
   ],
 }
 
