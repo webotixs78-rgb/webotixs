@@ -10,12 +10,15 @@ import TestimonialsSection from '@/components/public/home/TestimonialsSection'
 import VideoTestimonialSection from '@/components/public/home/VideoTestimonialSection'
 import TeamPreviewSection from '@/components/public/home/TeamPreviewSection'
 import ContactSection from '@/components/public/home/ContactSection'
+import JsonLd from '@/components/JsonLd'
+import { organizationSchema } from '@/lib/schema/service-schemas'
 
 export const revalidate = 60
 
 export default function Home() {
   return (
     <>
+      <JsonLd data={organizationSchema} />
       <HeroSection />
       <TechLogoSlider />
       <WhyChooseUsSection />

@@ -4,6 +4,8 @@ import ScrollReveal from '@/components/animations/ScrollReveal'
 import { getCMSData } from '@/lib/data/cms'
 import { slugify } from '@/lib/utils'
 import ServicesGridClient from '@/components/public/services/ServicesGridClient'
+import JsonLd from '@/components/JsonLd'
+import { servicesHubSchema } from '@/lib/schema/service-schemas'
 
 export const dynamic = 'force-dynamic'
 
@@ -17,6 +19,7 @@ export default async function ServicesPage() {
 
   return (
     <div className="pt-24 bg-background">
+      <JsonLd data={servicesHubSchema} />
       {/* Hero Section */}
       <section className="relative py-20 md:py-28 overflow-hidden">
         <div className="absolute inset-0 mesh-gradient opacity-30 pointer-events-none" />

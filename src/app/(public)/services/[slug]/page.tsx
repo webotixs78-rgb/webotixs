@@ -4,6 +4,8 @@ import { ArrowLeft, Check, Compass, Workflow, ShieldCheck, Mail } from 'lucide-r
 import { getCMSData } from '@/lib/data/cms'
 import { slugify } from '@/lib/utils'
 import ScrollReveal from '@/components/animations/ScrollReveal'
+import JsonLd from '@/components/JsonLd'
+import { serviceSchemaMap } from '@/lib/schema/service-schemas'
 
 export const dynamic = 'force-dynamic'
 
@@ -43,8 +45,11 @@ export default async function ServiceDetailPage({ params }: Props) {
     notFound()
   }
 
+  const schema = serviceSchemaMap[slug]
+
   return (
     <div className="pt-24 bg-background min-h-screen">
+      {schema && <JsonLd data={schema} />}
       {/* Header Info */}
       <section className="relative py-16 md:py-24 overflow-hidden">
         <div className="absolute inset-0 mesh-gradient opacity-20 pointer-events-none" />
