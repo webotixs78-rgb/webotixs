@@ -21,12 +21,14 @@ export const metadata: Metadata = {
     template: '%s | Webotixs',
   },
   description:
-    'Webotixs is a premium web design and digital agency crafting stunning websites, mobile apps, and brand identities that drive real business results.',
+    'Crafting stunning digital experiences that convert visitors into customers. Websites, AI automation, and custom CRM solutions for growing businesses.',
   keywords: [
     'web design agency',
     'web development',
     'mobile app development',
     'brand identity',
+    'AI automation',
+    'custom CRM solutions',
     'digital agency',
     'SEO',
     'e-commerce',
@@ -35,7 +37,7 @@ export const metadata: Metadata = {
   ],
   authors: [{ name: 'Webotixs' }],
   creator: 'Webotixs',
-  metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || 'https://webotixs.com'),
+  metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || 'https://www.webotixs.com'),
   icons: {
     icon: '/icon?v=2',
     shortcut: '/icon?v=2',
@@ -44,26 +46,33 @@ export const metadata: Metadata = {
   openGraph: {
     type: 'website',
     locale: 'en_US',
-    url: process.env.NEXT_PUBLIC_APP_URL || 'https://webotixs.com',
+    url: 'https://www.webotixs.com/',
     siteName: 'Webotixs',
-    title: 'Webotixs — Premium Web Design & Development Agency',
+    title: 'Webotixs | Premium Web Design & Development Agency',
     description:
-      'Crafting stunning digital experiences that convert visitors into customers.',
+      'We build high-performing websites, AI automations, and custom CRM solutions that help businesses grow.',
     images: [
       {
-        url: '/og-image.jpg',
+        url: 'https://www.webotixs.com/og-webotixs.jpg',
         width: 1200,
         height: 630,
-        alt: 'Webotixs Agency',
+        alt: 'Webotixs — Premium Web Design, AI Automation & CRM Solutions',
       },
     ],
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Webotixs — Premium Web Design & Development Agency',
+    title: 'Webotixs | Premium Web Design & Development Agency',
     description:
-      'Crafting stunning digital experiences that convert visitors into customers.',
-    images: ['/og-image.jpg'],
+      'We build high-performing websites, AI automations, and custom CRM solutions that help businesses grow.',
+    images: [
+      {
+        url: 'https://www.webotixs.com/og-webotixs.jpg',
+        width: 1200,
+        height: 630,
+        alt: 'Webotixs premium digital agency social preview.',
+      },
+    ],
     creator: '@webotixs',
   },
   robots: {
