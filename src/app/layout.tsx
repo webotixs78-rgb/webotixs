@@ -53,7 +53,9 @@ export const metadata: Metadata = {
       'We build high-performing websites, AI automations, and custom CRM solutions that help businesses grow.',
     images: [
       {
-        url: 'https://www.webotixs.com/og-webotixs.jpg',
+        url: 'https://www.webotixs.com/og-webotixs.jpg?v=2',
+        secureUrl: 'https://www.webotixs.com/og-webotixs.jpg?v=2',
+        type: 'image/jpeg',
         width: 1200,
         height: 630,
         alt: 'Webotixs — Premium Web Design, AI Automation & CRM Solutions',
@@ -67,7 +69,9 @@ export const metadata: Metadata = {
       'We build high-performing websites, AI automations, and custom CRM solutions that help businesses grow.',
     images: [
       {
-        url: 'https://www.webotixs.com/og-webotixs.jpg',
+        url: 'https://www.webotixs.com/og-webotixs.jpg?v=2',
+        secureUrl: 'https://www.webotixs.com/og-webotixs.jpg?v=2',
+        type: 'image/jpeg',
         width: 1200,
         height: 630,
         alt: 'Webotixs premium digital agency social preview.',
