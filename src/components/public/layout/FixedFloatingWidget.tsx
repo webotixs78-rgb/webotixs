@@ -1,219 +1,310 @@
 'use client'
 
-import React, { useState, useEffect } from 'react'
-import { MessageCircle, ChevronUp } from 'lucide-react'
+import React, { useState, useEffect, useRef } from 'react'
+import { motion, AnimatePresence } from 'framer-motion'
 
-// Custom SVGs for Clutch, Trustpilot, Google
-function ClutchIcon({ size = 14 }: { size?: number }) {
+// SVG Icons matching brand designs
+function ChatIcon() {
   return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="currentColor">
-      <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 15h-2v-2h2v2zm0-4h-2V7h2v6z" />
+    <svg
+      width="28"
+      height="28"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2.3"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <path d="M7.9 20A9 9 0 1 0 4 16.1L2 22z" />
     </svg>
   )
 }
 
-function TrustpilotIcon({ size = 14 }: { size?: number }) {
+function CloseIcon() {
   return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="currentColor">
-      <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" />
+    <svg
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2.6"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <path d="M18 6L6 18M6 6l12 12" />
     </svg>
   )
 }
 
-function GoogleGIcon({ size = 14 }: { size?: number }) {
+function WhatsAppIcon() {
   return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="currentColor">
-      <path d="M12.48 10.92v3.28h7.84c-.24 1.84-.853 3.187-1.787 4.133-1.147 1.147-2.933 2.4-6.053 2.4-4.827 0-8.6-3.893-8.6-8.72s3.773-8.72 8.6-8.72c2.6 0 4.507 1.027 5.907 2.347l2.307-2.307C18.747 1.44 15.96 0 12.48 0 5.8 0 0 5.4 0 12s5.8 12 12.48 12c3.6 0 6.32-1.187 8.44-3.413 2.16-2.16 2.84-5.213 2.84-7.667 0-.76-.053-1.467-.173-2.053H12.48z" />
+    <svg width="26" height="26" viewBox="0 0 24 24" fill="currentColor">
+      <path d="M12.04 2c-5.46 0-9.91 4.45-9.91 9.91 0 1.75.46 3.45 1.32 4.95L2.05 22l5.25-1.38c1.45.79 3.08 1.21 4.74 1.21 5.46 0 9.91-4.45 9.91-9.91 0-2.65-1.03-5.14-2.9-7.01A9.816 9.816 0 0 0 12.04 2zm.01 1.67c2.2 0 4.26.86 5.82 2.42a8.225 8.225 0 0 1 2.41 5.83c0 4.54-3.7 8.24-8.24 8.24-1.48 0-2.93-.4-4.2-1.15l-.3-.18-3.12.82.83-3.04-.2-.31a8.196 8.196 0 0 1-1.26-4.38c0-4.54 3.7-8.24 8.24-8.24zm4.52 11.66c-.25-.13-1.47-.72-1.7-.81-.23-.08-.39-.13-.56.13-.17.25-.64.81-.79.97-.14.17-.29.19-.54.06-.25-.13-1.06-.39-2.02-1.25-.75-.67-1.26-1.5-1.41-1.75-.15-.25-.02-.39.11-.51.11-.11.25-.29.37-.44.13-.14.17-.25.25-.41.08-.17.04-.31-.02-.44-.06-.13-.56-1.34-.76-1.84-.2-.49-.4-.42-.56-.43h-.48c-.17 0-.44.06-.67.31-.23.25-.87.85-.87 2.07 0 1.22.89 2.4 1.01 2.57.13.17 1.75 2.67 4.24 3.75.59.26 1.05.41 1.41.53.59.19 1.13.16 1.56.1.48-.07 1.47-.6 1.68-1.18.21-.58.21-1.07.15-1.18-.06-.12-.22-.19-.47-.32z" />
+    </svg>
+  )
+}
+
+function InstagramIcon() {
+  return (
+    <svg
+      width="22"
+      height="22"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2.1"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <rect width="20" height="20" x="2" y="2" rx="5" ry="5" />
+      <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" />
+      <line x1="17.5" x2="17.51" y1="6.5" y2="6.5" />
+    </svg>
+  )
+}
+
+function FacebookIcon() {
+  return (
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
+      <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z" />
+    </svg>
+  )
+}
+
+function TikTokIcon() {
+  return (
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+      <path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64c.298-.002.595.042.88.13V9.4a6.33 6.33 0 0 0-1-.08A6.34 6.34 0 0 0 3 15.66a6.34 6.34 0 0 0 10.82 4.49 6.27 6.27 0 0 0 1.95-4.48V8.66a8.28 8.28 0 0 0 4.82 1.48v-3.45z" />
+    </svg>
+  )
+}
+
+function YouTubeIcon() {
+  return (
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
+      <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z" />
+    </svg>
+  )
+}
+
+function ArrowUpIcon() {
+  return (
+    <svg
+      width="20"
+      height="20"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2.5"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <line x1="12" y1="19" x2="12" y2="5" />
+      <polyline points="5 12 12 5 19 12" />
     </svg>
   )
 }
 
 export default function FixedFloatingWidget() {
-  const [showBackToTop, setShowBackToTop] = useState(false)
+  const [isOpen, setIsOpen] = useState(false)
+  const containerRef = useRef<HTMLDivElement>(null)
 
+  // Close when clicking outside
   useEffect(() => {
-    const handleScroll = () => {
-      setShowBackToTop(window.scrollY > 250)
+    function handleClickOutside(event: MouseEvent) {
+      if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
+        setIsOpen(false)
+      }
     }
-    window.addEventListener('scroll', handleScroll, { passive: true })
-    return () => window.removeEventListener('scroll', handleScroll)
+    if (isOpen) {
+      document.addEventListener('mousedown', handleClickOutside)
+    }
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside)
+    }
+  }, [isOpen])
+
+  // Close on Escape key
+  useEffect(() => {
+    function handleKeyDown(e: KeyboardEvent) {
+      if (e.key === 'Escape') {
+        setIsOpen(false)
+      }
+    }
+    window.addEventListener('keydown', handleKeyDown)
+    return () => window.removeEventListener('keydown', handleKeyDown)
   }, [])
 
-  const scrollToTop = () => {
+  const handleScrollToTop = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' })
+    setIsOpen(false)
   }
 
+  const items = [
+    {
+      id: 'top',
+      label: 'Back to top',
+      pillClass: 'bg-white text-gray-900 font-semibold shadow-md',
+      circleClass: 'bg-white text-gray-900 shadow-md',
+      icon: <ArrowUpIcon />,
+      onClick: handleScrollToTop,
+    },
+    {
+      id: 'youtube',
+      label: 'YouTube',
+      pillClass: 'bg-white text-gray-900 font-semibold shadow-md',
+      circleClass: 'bg-white text-gray-900 shadow-md',
+      icon: <YouTubeIcon />,
+      href: 'https://youtube.com/@webotixs',
+    },
+    {
+      id: 'tiktok',
+      label: 'TikTok',
+      pillClass: 'bg-white text-gray-900 font-semibold shadow-md',
+      circleClass: 'bg-white text-gray-900 shadow-md',
+      icon: <TikTokIcon />,
+      href: 'https://www.tiktok.com/@webotixs',
+    },
+    {
+      id: 'facebook',
+      label: 'Facebook',
+      pillClass: 'bg-white text-gray-900 font-semibold shadow-md',
+      circleClass: 'bg-white text-gray-900 shadow-md',
+      icon: <FacebookIcon />,
+      href: 'https://www.facebook.com/profile.php?id=61585230680319',
+    },
+    {
+      id: 'instagram',
+      label: 'Instagram',
+      pillClass: 'bg-white text-gray-900 font-semibold shadow-md',
+      circleClass: 'bg-white text-gray-900 shadow-md',
+      icon: <InstagramIcon />,
+      href: 'https://www.instagram.com/webotixs?igsh=dzRhNjV6cGptNXZp',
+    },
+    {
+      id: 'whatsapp',
+      label: 'Need help?',
+      pillClass: 'bg-[#FFBE0B] text-gray-950 font-bold shadow-md',
+      circleClass: 'bg-[#25D366] text-white shadow-md',
+      icon: <WhatsAppIcon />,
+      href: 'https://wa.me/12089055973',
+    },
+  ]
+
   return (
-    <>
-      {/* DESKTOP MODE: Sleek Narrow Vertical Dock (Right-Center) */}
-      <aside
-        className="hidden md:flex fixed right-2.5 top-1/2 -translate-y-1/2 z-50 flex-col items-center"
-        aria-label="Quick Connect Dock"
+    <aside
+      ref={containerRef}
+      className="fixed bottom-6 right-5 sm:bottom-7 sm:right-7 z-50 flex flex-col items-end pointer-events-auto"
+      aria-label="Quick Connect & Social Menu"
+    >
+      {/* Expanded Menu Stack */}
+      <AnimatePresence>
+        {isOpen && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.2 }}
+            className="flex flex-col items-end gap-3.5 mb-3.5"
+          >
+            {items.map((item, index) => {
+              const delay = (items.length - 1 - index) * 0.04
+              const content = (
+                <motion.div
+                  key={item.id}
+                  initial={{ opacity: 0, y: 15, scale: 0.85 }}
+                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                  exit={{ opacity: 0, y: 10, scale: 0.85 }}
+                  transition={{ duration: 0.22, delay }}
+                  className="flex items-center justify-end gap-3 group cursor-pointer"
+                >
+                  {/* Pill label on the left */}
+                  <span
+                    className={`px-4 py-2 rounded-full text-sm leading-none whitespace-nowrap transition-transform duration-200 group-hover:scale-105 select-none ${item.pillClass}`}
+                  >
+                    {item.label}
+                  </span>
+
+                  {/* Circular icon button on the right */}
+                  <div
+                    className={`w-12 h-12 rounded-full flex items-center justify-center transition-all duration-200 group-hover:scale-110 active:scale-95 ${item.circleClass}`}
+                  >
+                    {item.icon}
+                  </div>
+                </motion.div>
+              )
+
+              if (item.href) {
+                return (
+                  <a
+                    key={item.id}
+                    href={item.href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    aria-label={item.label}
+                    className="focus:outline-none"
+                    onClick={() => setIsOpen(false)}
+                  >
+                    {content}
+                  </a>
+                )
+              }
+
+              return (
+                <button
+                  key={item.id}
+                  type="button"
+                  onClick={item.onClick}
+                  aria-label={item.label}
+                  className="focus:outline-none"
+                >
+                  {content}
+                </button>
+              )
+            })}
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Main Trigger Button */}
+      <motion.button
+        type="button"
+        onClick={() => setIsOpen(!isOpen)}
+        aria-label={isOpen ? 'Close menu' : 'Open quick connect menu'}
+        aria-expanded={isOpen}
+        whileTap={{ scale: 0.92 }}
+        className={`w-14 h-14 rounded-full flex items-center justify-center shadow-xl transition-all duration-300 focus:outline-none cursor-pointer ${
+          isOpen
+            ? 'bg-[#18181b] text-[#FFBE0B] hover:bg-black'
+            : 'bg-[#FFBE0B] text-gray-950 hover:bg-[#f5b300] hover:scale-105'
+        }`}
       >
-        <div className="bg-[#050816]/90 border border-primary/30 backdrop-blur-xl rounded-full py-2.5 px-1.5 flex flex-col items-center gap-2.5 shadow-[0_0_20px_rgba(59,130,246,0.25)] relative group">
-          {/* WhatsApp Direct */}
-          <a
-            href="https://wa.me/12089055973"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="group/item relative flex items-center justify-center"
-            aria-label="Chat on WhatsApp"
-          >
-            <div className="w-8 h-8 rounded-full bg-emerald-500/20 border border-emerald-500/50 flex items-center justify-center text-emerald-400 group-hover/item:bg-emerald-500 group-hover/item:text-white group-hover/item:scale-110 transition-all shadow-md">
-              <MessageCircle size={15} />
-              <span className="absolute -top-0.5 -right-0.5 w-2 h-2 bg-emerald-400 rounded-full animate-ping" />
-              <span className="absolute -top-0.5 -right-0.5 w-2 h-2 bg-emerald-500 rounded-full border border-black" />
-            </div>
-
-            {/* Hover Tooltip */}
-            <div className="absolute right-full mr-3 top-1/2 -translate-y-1/2 px-3 py-1.5 glass rounded-xl text-xs font-bold text-white whitespace-nowrap opacity-0 group-hover/item:opacity-100 pointer-events-none transition-all shadow-xl border border-emerald-500/30">
-              WhatsApp Chat (+1 208 905-5973)
-            </div>
-          </a>
-
-          <div className="w-4 h-[1px] bg-border/50" />
-
-          {/* Clutch */}
-          <a
-            href="https://clutch.co/profile/webotixs"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="group/item relative flex items-center justify-center"
-            aria-label="Clutch Profile"
-          >
-            <div className="w-8 h-8 rounded-full bg-red-500/15 border border-red-500/40 flex items-center justify-center text-red-400 group-hover/item:bg-red-600 group-hover/item:text-white group-hover/item:scale-110 transition-all shadow-md">
-              <ClutchIcon size={14} />
-            </div>
-
-            {/* Hover Tooltip */}
-            <div className="absolute right-full mr-3 top-1/2 -translate-y-1/2 px-3 py-1.5 glass rounded-xl text-xs font-bold text-white whitespace-nowrap opacity-0 group-hover/item:opacity-100 pointer-events-none transition-all shadow-xl border border-red-500/30">
-              Clutch Reviews 4.9★
-            </div>
-          </a>
-
-          {/* Trustpilot */}
-          <a
-            href="https://www.trustpilot.com/review/webotixs.com"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="group/item relative flex items-center justify-center"
-            aria-label="Trustpilot Reviews"
-          >
-            <div className="w-8 h-8 rounded-full bg-emerald-500/15 border border-emerald-500/40 flex items-center justify-center text-emerald-400 group-hover/item:bg-emerald-600 group-hover/item:text-white group-hover/item:scale-110 transition-all shadow-md">
-              <TrustpilotIcon size={14} />
-            </div>
-
-            {/* Hover Tooltip */}
-            <div className="absolute right-full mr-3 top-1/2 -translate-y-1/2 px-3 py-1.5 glass rounded-xl text-xs font-bold text-white whitespace-nowrap opacity-0 group-hover/item:opacity-100 pointer-events-none transition-all shadow-xl border border-emerald-500/30">
-              Trustpilot 5.0★
-            </div>
-          </a>
-
-          {/* Google */}
-          <a
-            href="https://g.page/r/Cbbz0-7qGKZVEBM/review"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="group/item relative flex items-center justify-center"
-            aria-label="Google Reviews"
-          >
-            <div className="w-8 h-8 rounded-full bg-blue-500/15 border border-blue-500/40 flex items-center justify-center text-blue-400 group-hover/item:bg-blue-600 group-hover/item:text-white group-hover/item:scale-110 transition-all shadow-md">
-              <GoogleGIcon size={14} />
-            </div>
-
-            {/* Hover Tooltip */}
-            <div className="absolute right-full mr-3 top-1/2 -translate-y-1/2 px-3 py-1.5 glass rounded-xl text-xs font-bold text-white whitespace-nowrap opacity-0 group-hover/item:opacity-100 pointer-events-none transition-all shadow-xl border border-blue-500/30">
-              Google Review 5.0★
-            </div>
-          </a>
-
-          {/* Back to top */}
-          {showBackToTop && (
-            <>
-              <div className="w-4 h-[1px] bg-border/50" />
-              <button
-                onClick={scrollToTop}
-                className="group/item relative flex items-center justify-center"
-                aria-label="Back to top"
-              >
-                <div className="w-8 h-8 rounded-full bg-gradient-to-r from-primary-from to-primary-to text-white flex items-center justify-center group-hover/item:scale-110 transition-all shadow-md">
-                  <ChevronUp size={16} />
-                </div>
-                <div className="absolute right-full mr-3 top-1/2 -translate-y-1/2 px-3 py-1.5 glass rounded-xl text-xs font-bold text-white whitespace-nowrap opacity-0 group-hover/item:opacity-100 pointer-events-none transition-all shadow-xl border border-primary/30">
-                  Back to top
-                </div>
-              </button>
-            </>
-          )}
-        </div>
-      </aside>
-
-      {/* MOBILE MODE: Compact Horizontal Bottom Dock */}
-      <aside
-        className="md:hidden fixed bottom-4 right-3 z-50 flex items-center gap-2"
-        aria-label="Mobile Quick Dock"
-      >
-        <div className="bg-[#050816]/95 border border-primary/40 backdrop-blur-2xl rounded-full px-3 py-1.5 flex items-center gap-2.5 shadow-[0_0_20px_rgba(59,130,246,0.3)]">
-          {/* WhatsApp Direct */}
-          <a
-            href="https://wa.me/12089055973"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="w-8 h-8 rounded-full bg-emerald-500 text-white flex items-center justify-center shadow-md active:scale-95 transition-transform"
-            aria-label="WhatsApp"
-          >
-            <MessageCircle size={16} />
-            <span className="sr-only">Chat on WhatsApp</span>
-          </a>
-
-          {/* Clutch */}
-          <a
-            href="https://clutch.co/profile/webotixs"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="w-8 h-8 rounded-full bg-red-600/90 text-white flex items-center justify-center shadow-md active:scale-95 transition-transform"
-            aria-label="Clutch"
-          >
-            <ClutchIcon size={14} />
-            <span className="sr-only">Clutch Agency Reviews</span>
-          </a>
-
-          {/* Trustpilot */}
-          <a
-            href="https://www.trustpilot.com/review/webotixs.com"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="w-8 h-8 rounded-full bg-emerald-600/90 text-white flex items-center justify-center shadow-md active:scale-95 transition-transform"
-            aria-label="Trustpilot"
-          >
-            <TrustpilotIcon size={14} />
-            <span className="sr-only">Trustpilot Verified Reviews</span>
-          </a>
-
-          {/* Google */}
-          <a
-            href="https://g.page/r/Cbbz0-7qGKZVEBM/review"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="w-8 h-8 rounded-full bg-blue-600/90 text-white flex items-center justify-center shadow-md active:scale-95 transition-transform"
-            aria-label="Google"
-          >
-            <GoogleGIcon size={14} />
-            <span className="sr-only">Google Business Reviews</span>
-          </a>
-
-          {/* Back to top on mobile */}
-          {showBackToTop && (
-            <button
-              onClick={scrollToTop}
-              className="w-8 h-8 rounded-full bg-gradient-to-r from-primary-from to-primary-to text-white flex items-center justify-center shadow-md active:scale-95 transition-transform"
-              aria-label="Back to top"
+        <AnimatePresence mode="wait" initial={false}>
+          {isOpen ? (
+            <motion.div
+              key="close"
+              initial={{ rotate: -90, opacity: 0 }}
+              animate={{ rotate: 0, opacity: 1 }}
+              exit={{ rotate: 90, opacity: 0 }}
+              transition={{ duration: 0.18 }}
             >
-              <ChevronUp size={16} />
-            </button>
+              <CloseIcon />
+            </motion.div>
+          ) : (
+            <motion.div
+              key="chat"
+              initial={{ rotate: 90, opacity: 0 }}
+              animate={{ rotate: 0, opacity: 1 }}
+              exit={{ rotate: -90, opacity: 0 }}
+              transition={{ duration: 0.18 }}
+            >
+              <ChatIcon />
+            </motion.div>
           )}
-        </div>
-      </aside>
-    </>
+        </AnimatePresence>
+      </motion.button>
+    </aside>
   )
 }
