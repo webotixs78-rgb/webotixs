@@ -164,8 +164,8 @@ export default function FixedFloatingWidget() {
       id: 'top',
       labelNode: <span>Back to top</span>,
       ariaLabel: 'Back to top',
-      pillClass: 'bg-white text-gray-900 font-semibold shadow-md',
-      circleClass: 'bg-white text-gray-900 shadow-md',
+      pillClass: 'bg-white dark:bg-[#0D1224]/95 text-slate-800 dark:text-white border border-slate-200/90 dark:border-white/10 font-semibold shadow-md',
+      circleClass: 'bg-white dark:bg-[#111827] text-slate-800 dark:text-white border border-slate-200/90 dark:border-white/10 shadow-md',
       icon: <ArrowUpIcon />,
       onClick: handleScrollToTop,
     },
@@ -173,8 +173,8 @@ export default function FixedFloatingWidget() {
       id: 'youtube',
       labelNode: <span>YouTube</span>,
       ariaLabel: 'YouTube',
-      pillClass: 'bg-white text-gray-900 font-semibold shadow-md',
-      circleClass: 'bg-white text-red-600 shadow-md',
+      pillClass: 'bg-white dark:bg-[#0D1224]/95 text-slate-800 dark:text-white border border-slate-200/90 dark:border-white/10 font-semibold shadow-md',
+      circleClass: 'bg-white dark:bg-[#111827] text-red-600 border border-slate-200/90 dark:border-white/10 shadow-md',
       icon: <YouTubeIcon />,
       href: 'https://www.youtube.com/@WebotixsLTD',
     },
@@ -182,8 +182,8 @@ export default function FixedFloatingWidget() {
       id: 'facebook',
       labelNode: <span>Facebook</span>,
       ariaLabel: 'Facebook',
-      pillClass: 'bg-white text-gray-900 font-semibold shadow-md',
-      circleClass: 'bg-white text-[#1877F2] shadow-md',
+      pillClass: 'bg-white dark:bg-[#0D1224]/95 text-slate-800 dark:text-white border border-slate-200/90 dark:border-white/10 font-semibold shadow-md',
+      circleClass: 'bg-white dark:bg-[#111827] text-[#1877F2] border border-slate-200/90 dark:border-white/10 shadow-md',
       icon: <FacebookIcon />,
       href: 'https://www.facebook.com/profile.php?id=61585230680319',
     },
@@ -191,8 +191,8 @@ export default function FixedFloatingWidget() {
       id: 'instagram',
       labelNode: <span>Instagram</span>,
       ariaLabel: 'Instagram',
-      pillClass: 'bg-white text-gray-900 font-semibold shadow-md',
-      circleClass: 'bg-white text-[#E4405F] shadow-md',
+      pillClass: 'bg-white dark:bg-[#0D1224]/95 text-slate-800 dark:text-white border border-slate-200/90 dark:border-white/10 font-semibold shadow-md',
+      circleClass: 'bg-white dark:bg-[#111827] text-[#E4405F] border border-slate-200/90 dark:border-white/10 shadow-md',
       icon: <InstagramIcon />,
       href: 'https://www.instagram.com/webotixs?igsh=dzRhNjV6cGptNXZp',
     },
@@ -201,13 +201,13 @@ export default function FixedFloatingWidget() {
       labelNode: (
         <span className="flex items-center gap-1.5">
           <span>Clutch Reviews</span>
-          <span className="bg-red-50 text-red-600 font-bold text-xs px-2 py-0.5 rounded-full border border-red-200">
+          <span className="bg-red-50 dark:bg-red-950/60 text-red-600 dark:text-red-400 font-bold text-xs px-2 py-0.5 rounded-full border border-red-200 dark:border-red-800/40">
             4.9★
           </span>
         </span>
       ),
       ariaLabel: 'Clutch Reviews 4.9 Stars',
-      pillClass: 'bg-white text-gray-900 font-semibold shadow-md',
+      pillClass: 'bg-white dark:bg-[#0D1224]/95 text-slate-800 dark:text-white border border-slate-200/90 dark:border-white/10 font-semibold shadow-md',
       circleClass: 'bg-red-500 text-white shadow-md',
       icon: <ClutchIcon />,
       href: 'https://clutch.co/profile/webotixs',
@@ -217,13 +217,13 @@ export default function FixedFloatingWidget() {
       labelNode: (
         <span className="flex items-center gap-1.5">
           <span>Trustpilot</span>
-          <span className="bg-emerald-50 text-emerald-600 font-bold text-xs px-2 py-0.5 rounded-full border border-emerald-200">
+          <span className="bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 font-bold text-xs px-2 py-0.5 rounded-full border border-emerald-200 dark:border-emerald-800/40">
             5.0★
           </span>
         </span>
       ),
       ariaLabel: 'Trustpilot Verified Reviews 5.0 Stars',
-      pillClass: 'bg-white text-gray-900 font-semibold shadow-md',
+      pillClass: 'bg-white dark:bg-[#0D1224]/95 text-slate-800 dark:text-white border border-slate-200/90 dark:border-white/10 font-semibold shadow-md',
       circleClass: 'bg-emerald-500 text-white shadow-md',
       icon: <TrustpilotIcon />,
       href: 'https://www.trustpilot.com/review/webotixs.com',
@@ -233,13 +233,13 @@ export default function FixedFloatingWidget() {
       labelNode: (
         <span className="flex items-center gap-1.5">
           <span>Google Review</span>
-          <span className="bg-blue-50 text-blue-600 font-bold text-xs px-2 py-0.5 rounded-full border border-blue-200">
+          <span className="bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 font-bold text-xs px-2 py-0.5 rounded-full border border-blue-200 dark:border-blue-800/40">
             5.0★
           </span>
         </span>
       ),
       ariaLabel: 'Google Business Reviews 5.0 Stars',
-      pillClass: 'bg-white text-gray-900 font-semibold shadow-md',
+      pillClass: 'bg-white dark:bg-[#0D1224]/95 text-slate-800 dark:text-white border border-slate-200/90 dark:border-white/10 font-semibold shadow-md',
       circleClass: 'bg-blue-500 text-white shadow-md',
       icon: <GoogleIcon />,
       href: 'https://g.page/r/Cbbz0-7qGKZVEBM/review',
@@ -247,15 +247,15 @@ export default function FixedFloatingWidget() {
     {
       id: 'whatsapp',
       labelNode: (
-        <span className="flex items-center gap-1.5 font-bold text-emerald-700">
+        <span className="flex items-center gap-1.5 font-bold text-emerald-700 dark:text-emerald-400">
           <span>Need help?</span>
-          <span className="bg-emerald-100/90 text-emerald-800 text-xs px-2 py-0.5 rounded-full border border-emerald-300">
+          <span className="bg-emerald-100 dark:bg-emerald-950/70 text-emerald-800 dark:text-emerald-300 text-xs px-2 py-0.5 rounded-full border border-emerald-300 dark:border-emerald-700/50">
             WhatsApp
           </span>
         </span>
       ),
       ariaLabel: 'Need help? Chat on WhatsApp',
-      pillClass: 'bg-white text-gray-900 shadow-md',
+      pillClass: 'bg-white dark:bg-[#0D1224]/95 text-slate-800 dark:text-white border border-slate-200/90 dark:border-white/10 shadow-md',
       circleClass: 'bg-[#25D366] text-white shadow-md',
       icon: <WhatsAppIcon />,
       href: 'https://wa.me/12089055973',
@@ -346,7 +346,7 @@ export default function FixedFloatingWidget() {
         whileTap={{ scale: 0.92 }}
         className={`w-14 h-14 rounded-full flex items-center justify-center shadow-xl transition-all duration-300 focus:outline-none cursor-pointer border ${
           isOpen
-            ? 'bg-[#0D1224] text-cyan-400 border-cyan-500/50 hover:bg-[#151D35] hover:border-cyan-400'
+            ? 'bg-white dark:bg-[#0D1224] text-cyan-600 dark:text-cyan-400 border-slate-300 dark:border-cyan-500/50 hover:bg-slate-50 dark:hover:bg-[#151D35] hover:border-cyan-500'
             : 'bg-gradient-to-r from-[#2563EB] to-[#06B6D4] text-white border-white/25 shadow-[0_0_25px_rgba(37,99,235,0.55)] hover:shadow-[0_0_35px_rgba(6,182,212,0.7)] hover:scale-105'
         }`}
       >

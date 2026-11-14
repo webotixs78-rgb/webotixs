@@ -47,7 +47,7 @@ export default function PortfolioSection() {
   }, [])
 
   return (
-    <section style={{ padding: '110px 0', background: '#050816', position: 'relative', overflow: 'hidden' }}>
+    <section style={{ padding: '110px 0', background: 'var(--bg-primary)', position: 'relative', overflow: 'hidden' }}>
       {/* Ambient glow */}
       <div className="portfolio-ambient-glow" />
 
@@ -58,16 +58,16 @@ export default function PortfolioSection() {
           {/* Borderless Glass Badge Pill */}
           <div className="portfolio-badge-pill" style={{ marginLeft: 'auto', marginRight: 'auto', width: 'fit-content' }}>
             <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#22d3ee', display: 'inline-block', boxShadow: '0 0 12px #22d3ee', animation: 'pulse 2s infinite' }} />
-            <span style={{ color: 'rgba(255,255,255,0.92)', fontSize: '11px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.12em' }}>Our Work</span>
+            <span style={{ color: 'var(--color-text-main)', fontSize: '11px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.12em' }}>Our Work</span>
           </div>
 
-          <h2 style={{ fontSize: 'clamp(2.2rem, 5vw, 3.6rem)', fontWeight: 800, color: '#ffffff', marginTop: '16px', marginBottom: '24px', letterSpacing: '-0.02em', lineHeight: 1.25 }}>
+          <h2 style={{ fontSize: 'clamp(2.2rem, 5vw, 3.6rem)', fontWeight: 800, color: 'var(--color-text-main)', marginTop: '16px', marginBottom: '24px', letterSpacing: '-0.02em', lineHeight: 1.25 }}>
             Projects That{' '}
             <span style={{ background: 'linear-gradient(135deg, #60a5fa 0%, #22d3ee 50%, #a78bfa 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>
               Speak Volumes
             </span>
           </h2>
-          <p style={{ color: '#94A3B8', fontSize: '1.08rem', maxWidth: '660px', margin: '0 auto', lineHeight: 1.75 }}>
+          <p style={{ color: 'var(--color-gray)', fontSize: '1.08rem', maxWidth: '660px', margin: '0 auto', lineHeight: 1.75 }}>
             A curated selection of our finest work — where strategy meets design and cutting-edge technology.
           </p>
         </ScrollReveal>
@@ -80,7 +80,7 @@ export default function PortfolioSection() {
               <ScrollReveal key={project.id || i} delay={i * 0.15} className="portfolio-card-wrap">
                 <div className="portfolio-card">
                   {/* Image Container */}
-                  <div style={{ position: 'relative', height: '250px', width: '100%', background: 'linear-gradient(135deg, #050816, #0A0E1F)', overflow: 'hidden' }}>
+                  <div style={{ position: 'relative', height: '250px', width: '100%', background: 'var(--bg-secondary)', overflow: 'hidden' }}>
                     <Link
                       href={projectHref}
                       aria-label={`View ${project.title} Case Study`}
@@ -133,12 +133,12 @@ export default function PortfolioSection() {
                     <div>
                       <Link
                         href={projectHref}
-                        style={{ fontSize: '1.2rem', fontWeight: 700, color: '#ffffff', marginBottom: '10px', lineHeight: 1.35, display: 'block', textDecoration: 'none', transition: 'color 0.3s' }}
+                        style={{ fontSize: '1.2rem', fontWeight: 700, color: 'var(--color-text-main)', marginBottom: '10px', lineHeight: 1.35, display: 'block', textDecoration: 'none', transition: 'color 0.3s' }}
                         className="hover:text-cyan-400"
                       >
                         {project.title}
                       </Link>
-                      <p style={{ color: '#94A3B8', fontSize: '0.875rem', lineHeight: 1.7, display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
+                      <p style={{ color: 'var(--color-gray)', fontSize: '0.875rem', lineHeight: 1.7, display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
                         {project.description}
                       </p>
                     </div>
@@ -161,7 +161,7 @@ export default function PortfolioSection() {
                     </div>
 
                     {/* Dedicated View Case Study Link */}
-                    <div style={{ paddingTop: '8px', borderTop: '1px solid rgba(255,255,255,0.06)' }}>
+                    <div style={{ paddingTop: '8px', borderTop: '1px solid var(--color-border)' }}>
                       <Link
                         href={projectHref}
                         aria-label={`View case study: ${project.title}`}

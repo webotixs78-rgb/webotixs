@@ -61,7 +61,7 @@ export default function FaqSection() {
   }
 
   return (
-    <section id="faq" style={{ padding: '110px 0', background: '#050816', position: 'relative', overflow: 'hidden' }}>
+    <section id="faq" style={{ padding: '110px 0', background: 'var(--bg-primary)', position: 'relative', overflow: 'hidden' }}>
       {/* Schema JSON-LD */}
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }} />
 
@@ -75,16 +75,16 @@ export default function FaqSection() {
           {/* Borderless Glass Badge Pill */}
           <div className="faq-badge-pill" style={{ marginLeft: 'auto', marginRight: 'auto', width: 'fit-content' }}>
             <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#22d3ee', display: 'inline-block', boxShadow: '0 0 12px #22d3ee', animation: 'pulse 2s infinite' }} />
-            <span style={{ color: 'rgba(255,255,255,0.92)', fontSize: '11px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.12em' }}>Frequently Asked Questions</span>
+            <span style={{ color: 'var(--color-text-main)', fontSize: '11px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.12em' }}>Frequently Asked Questions</span>
           </div>
 
-          <h2 style={{ fontSize: 'clamp(2.2rem, 5vw, 3.2rem)', fontWeight: 800, color: '#ffffff', marginTop: '16px', marginBottom: '24px', letterSpacing: '-0.02em', lineHeight: 1.25 }}>
+          <h2 style={{ fontSize: 'clamp(2.2rem, 5vw, 3.2rem)', fontWeight: 800, color: 'var(--color-text-main)', marginTop: '16px', marginBottom: '24px', letterSpacing: '-0.02em', lineHeight: 1.25 }}>
             Got Questions?{' '}
             <span style={{ background: 'linear-gradient(135deg, #60a5fa 0%, #22d3ee 50%, #a78bfa 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>
               We Have Answers
             </span>
           </h2>
-          <p style={{ color: '#94A3B8', fontSize: '1.08rem', maxWidth: '640px', margin: '0 auto', lineHeight: 1.75 }}>
+          <p style={{ color: 'var(--color-gray)', fontSize: '1.08rem', maxWidth: '640px', margin: '0 auto', lineHeight: 1.75 }}>
             Everything you need to know about working with Webotixs, our development workflow, and technology capabilities.
           </p>
         </ScrollReveal>
@@ -107,7 +107,7 @@ export default function FaqSection() {
                       <div className={`faq-icon-box${isOpen ? ' faq-icon-open' : ''}`}>
                         {isOpen ? <Sparkles size={18} /> : <HelpCircle size={18} />}
                       </div>
-                      <span style={{ fontWeight: 700, fontSize: '1.05rem', color: '#ffffff', lineHeight: 1.4 }}>
+                      <span style={{ fontWeight: 700, fontSize: '1.05rem', color: 'var(--color-text-main)', lineHeight: 1.4 }}>
                         {faq.question}
                       </span>
                     </div>
@@ -121,7 +121,7 @@ export default function FaqSection() {
                     className={`faq-answer${isOpen ? ' faq-answer-open' : ''}`}
                   >
                     <div className="faq-answer-inner">
-                      <p style={{ color: '#94A3B8', fontSize: '0.925rem', lineHeight: 1.85, paddingLeft: '86px', paddingRight: '28px', paddingBottom: '24px' }}>
+                      <p style={{ color: 'var(--color-gray)', fontSize: '0.925rem', lineHeight: 1.85, paddingLeft: '86px', paddingRight: '28px', paddingBottom: '24px' }}>
                         {faq.answer}
                       </p>
                     </div>

@@ -26,7 +26,7 @@ const config: Config = {
           DEFAULT: 'var(--color-border)',
         },
         text: {
-          white: 'var(--color-white)',
+          white: 'var(--color-text-main)',
           gray: 'var(--color-gray)',
         },
         success: '#22C55E',

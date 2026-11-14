@@ -10,7 +10,8 @@
     --color-primary-hover: #60A5FA;
     --color-gradient-from: #2563EB;
     --color-gradient-to: #06B6D4;
-    --color-white: #F8FAFC;
+    --color-text-main: #F8FAFC;
+    --color-white: #ffffff;
     --color-gray: #94A3B8;
     --color-border: #273449;
     --color-success: #22C55E;
@@ -29,7 +30,8 @@
     --color-primary-hover: #1D4ED8;
     --color-gradient-from: #1E40AF;
     --color-gradient-to: #0284C7;
-    --color-white: #0F172A;
+    --color-text-main: #0F172A;
+    --color-white: #ffffff;
     --color-gray: #475569;
     --color-border: #CBD5E1;
     --color-success: #16A34A;
@@ -54,7 +56,7 @@
 
   body {
     background-color: var(--bg-primary);
-    color: var(--color-white);
+    color: var(--color-text-main);
     font-family: var(--font-inter), system-ui, -apple-system, sans-serif;
     line-height: 1.6;
     -webkit-font-smoothing: antialiased;
@@ -327,7 +329,7 @@
 .tiptap-content h2,
 .tiptap-content h3,
 .tiptap-content h4 {
-  color: var(--color-white);
+  color: var(--color-text-main);
   margin-top: 2rem;
   margin-bottom: 1rem;
 }
@@ -866,3 +868,82 @@ html, body {
 .portfolio-card-wrap { height: 100%; }
 .portfolio-cta-wrap { text-align: center; margin-top: 56px; }
 .faq-header-wrap { text-align: center; margin-bottom: 64px; }
+
+/* Light mode overrides for Portfolio & FAQ sections */
+html.light .portfolio-card,
+.light .portfolio-card {
+  background: #FFFFFF !important;
+  border: 1px solid rgba(226, 232, 240, 0.9) !important;
+  box-shadow: 0 10px 30px rgba(15, 23, 42, 0.08) !important;
+}
+
+html.light .portfolio-card:hover,
+.light .portfolio-card:hover {
+  box-shadow: 0 20px 40px rgba(37, 99, 235, 0.15) !important;
+}
+
+html.light .portfolio-badge-pill,
+.light .portfolio-badge-pill {
+  background: rgba(241, 245, 249, 0.9) !important;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05) !important;
+}
+
+html.light .portfolio-badge-pill span:last-child {
+  color: #0F172A !important;
+}
+
+html.light .portfolio-tech-tag,
+.light .portfolio-tech-tag {
+  background: #F1F5F9 !important;
+  color: #475569 !important;
+  box-shadow: none !important;
+}
+
+html.light .portfolio-result-chip,
+.light .portfolio-result-chip {
+  background: linear-gradient(135deg, rgba(37, 99, 235, 0.08), rgba(6, 182, 212, 0.06)) !important;
+  color: #0284C7 !important;
+  box-shadow: none !important;
+}
+
+html.light .portfolio-ambient-glow,
+.light .portfolio-ambient-glow {
+  opacity: 0.2 !important;
+}
+
+html.light .faq-card,
+.light .faq-card {
+  background: #FFFFFF !important;
+  border: 1px solid rgba(226, 232, 240, 0.9) !important;
+  box-shadow: 0 4px 20px rgba(15, 23, 42, 0.05) !important;
+}
+
+html.light .faq-card.faq-open,
+.light .faq-card.faq-open {
+  background: #FFFFFF !important;
+  border: 1px solid rgba(59, 130, 246, 0.35) !important;
+  box-shadow: 0 8px 30px rgba(37, 99, 235, 0.10) !important;
+}
+
+html.light .faq-badge-pill,
+.light .faq-badge-pill {
+  background: rgba(241, 245, 249, 0.9) !important;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05) !important;
+}
+
+html.light .faq-badge-pill span:last-child {
+  color: #0F172A !important;
+}
+
+html.light .faq-icon-box,
+.light .faq-icon-box {
+  background: #F1F5F9 !important;
+  color: #475569 !important;
+}
+
+html.light .faq-chevron,
+.light .faq-chevron {
+  background: #F1F5F9 !important;
+  color: #475569 !important;
+}
+
