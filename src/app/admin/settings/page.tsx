@@ -67,7 +67,7 @@ export default function AdminSettingsPage() {
     social_linkedin: 'https://linkedin.com/company/webotixs',
     social_instagram: 'https://instagram.com/webotixs',
     social_github: 'https://github.com/webotixs',
-    social_youtube: 'https://youtube.com/@webotixs',
+    social_youtube: 'https://www.youtube.com/@WebotixsLTD',
     social_dribbble: 'https://dribbble.com/webotixs',
     // Page Content & Banners
     banner_about_title: 'Engineering Digital Excellence Since 2016',
